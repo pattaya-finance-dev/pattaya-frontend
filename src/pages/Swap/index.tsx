@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@pantherswap-libs/sdk'
+import { CurrencyAmount, JSBI, Token, Trade } from '@pattayaswap-dev-libs/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { CardBody, ArrowDownIcon, Button, IconButton, Text } from '@pattayaswap-dev-libs/uikit'
@@ -65,7 +65,8 @@ const Swap = () => {
   const { account } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
-  const [isExpertMode] = useExpertModeManager()
+  // const [isExpertMode] = useExpertModeManager()
+  const isExpertMode = true;
 
   // get custom setting values for user
   const [deadline] = useUserDeadline()

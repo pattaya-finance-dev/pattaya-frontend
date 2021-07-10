@@ -1,4 +1,4 @@
-import { Token, TokenAmount } from '@pantherswap-libs/sdk'
+import { Token, TokenAmount } from '@pattayaswap-dev-libs/sdk'
 import { useMemo } from 'react'
 import { useAllTokenBalances } from '../../state/wallet/hooks'
 

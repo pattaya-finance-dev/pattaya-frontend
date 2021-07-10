@@ -28,7 +28,7 @@
     {
       "name": "BUSD Token",
       "symbol": "BUSD",
-      "address": "0x615446C0Fd5eA8A5FD7fb763f3FC2C58774474F3",
+      "address": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
       "chainId": 97,
       "decimals": 18,
       "logoURI": "/images/coins/BTC.png"
@@ -48,6 +48,14 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "/images/coins/panther.png"
+    },
+    {
+      "name": "PattayaSwap Token",
+      "symbol": "PATTAYA",
+      "address": "0x58Fca8ed6834898Cace6cbff7FB23Fc51D5c7604",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "/images/coins/PATTAYA.png"
     },
     {
       "name": "BUSD Token",

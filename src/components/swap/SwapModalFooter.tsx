@@ -1,4 +1,4 @@
-import { Trade, TradeType } from '@pantherswap-libs/sdk'
+import { Trade, TradeType } from '@pattayaswap-dev-libs/sdk'
 import React, { useMemo, useState } from 'react'
 import { Text , Button } from '@pattayaswap-dev-libs/uikit'
 import { Repeat } from 'react-feather'

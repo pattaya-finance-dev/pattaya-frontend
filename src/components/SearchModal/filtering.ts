@@ -1,4 +1,4 @@
-import { Token } from '@pantherswap-libs/sdk'
+import { Token } from '@pattayaswap-dev-libs/sdk'
 import { isAddress } from '../../utils'
 
 export function filterTokens(tokens: Token[], search: string): Token[] {

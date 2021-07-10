@@ -1,4 +1,4 @@
-import { Currency, ETHER, JSBI, TokenAmount } from '@pantherswap-libs/sdk'
+import { Currency, ETHER, JSBI, TokenAmount } from '@pattayaswap-dev-libs/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, ChevronDownIcon, AddIcon, CardBody, Text } from '@pattayaswap-dev-libs/uikit'
 import CardNav from 'components/CardNav'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from '@pattayaswap-dev-libs/uikit'
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@pantherswap-libs/sdk'
+import { ChainId, Currency, currencyEquals, ETHER, Token } from '@pattayaswap-dev-libs/sdk'
 import styled from 'styled-components'
 
 import { SUGGESTED_BASES } from '../../constants'

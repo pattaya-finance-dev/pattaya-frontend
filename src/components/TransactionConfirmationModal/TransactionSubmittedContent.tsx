@@ -1,4 +1,4 @@
-import { ChainId } from '@pantherswap-libs/sdk'
+import { ChainId } from '@pattayaswap-dev-libs/sdk'
 import React, { useContext } from 'react'
 import { ThemeContext } from 'styled-components'
 import { Button, LinkExternal } from '@pattayaswap-dev-libs/uikit'

@@ -1,4 +1,4 @@
-import { Trade } from '@pantherswap-libs/sdk'
+import { Trade } from '@pattayaswap-dev-libs/sdk'
 import React, { Fragment, memo, useContext } from 'react'
 import { ChevronRight } from 'react-feather'
 import { Flex } from '@pattayaswap-dev-libs/uikit'

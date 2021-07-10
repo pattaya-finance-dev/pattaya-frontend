@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
-import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@pantherswap-libs/sdk'
+import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@pattayaswap-dev-libs/sdk'
 import { useMemo } from 'react'
 import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
@@ -60,6 +60,9 @@ function useSwapCallArguments(
 
     const swapMethods = []
 
+    const raw = trade.maximumAmountIn(new Percent(JSBI.BigInt(Math.floor(allowedSlippage)), BIPS_BASE)).raw
+      const hex = `0x${raw.toString(16)}`
+      console.log(hex);
     swapMethods.push(
       // @ts-ignore
       Router.swapCallParameters(trade, {
