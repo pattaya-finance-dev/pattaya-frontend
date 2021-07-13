@@ -62,7 +62,6 @@ function useSwapCallArguments(
 
     const raw = trade.maximumAmountIn(new Percent(JSBI.BigInt(Math.floor(allowedSlippage)), BIPS_BASE)).raw
       const hex = `0x${raw.toString(16)}`
-      console.log(hex);
     swapMethods.push(
       // @ts-ignore
       Router.swapCallParameters(trade, {

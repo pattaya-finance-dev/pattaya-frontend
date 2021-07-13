@@ -1,6 +1,6 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@pattayaswap-dev-libs/sdk'
 
-export const ROUTER_ADDRESS = '0x680191E1d3B9fB6259777A15aA88A08486f8be64'
+export const ROUTER_ADDRESS = '0xBD351b7073a6B5bbbEaC57b51ba836Cbc9372A76'
 
 // a list of tokens by chain
 type ChainTokenList = {
@@ -76,7 +76,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
   ], */
   [ChainId.BSCTESTNET]: [
         [
-            new Token(ChainId.BSCTESTNET, '0x58Fca8ed6834898Cace6cbff7FB23Fc51D5c7604', 18, 'PATTAYA', 'PantherSwap Token'),
+            new Token(ChainId.BSCTESTNET, '0xd7Cf8c8e4750972fcF40eec469a4DECEA1C92812', 18, 'PATTAYA', 'Pattaya Token'),
             new Token(ChainId.BSCTESTNET, '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd', 18, 'WBNB', 'Wrapped BNB'),
         ],
         [BUSD, USDT],
