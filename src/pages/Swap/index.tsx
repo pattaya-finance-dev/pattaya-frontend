@@ -35,6 +35,7 @@ import { TranslateString } from 'utils/translateTextHelpers'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
+import BodyWrapper from "../BodyWrapper";
 
 const { main: Main } = TYPE
 
@@ -65,8 +66,7 @@ const Swap = () => {
   const { account } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
-  // const [isExpertMode] = useExpertModeManager()
-  const isExpertMode = true;
+  const [isExpertMode] = useExpertModeManager()
 
   // get custom setting values for user
   const [deadline] = useUserDeadline()
@@ -259,7 +259,7 @@ const Swap = () => {
   )
 
   return (
-    <>
+      <BodyWrapper>
       <TokenWarningModal
         isOpen={urlLoadedTokens.length > 0 && !dismissTokenWarning}
         tokens={urlLoadedTokens}
@@ -465,7 +465,7 @@ const Swap = () => {
         </Wrapper>
       </AppBody>
       <AdvancedSwapDetailsDropdown trade={trade} />
-    </>
+      </BodyWrapper>
   )
 }
 

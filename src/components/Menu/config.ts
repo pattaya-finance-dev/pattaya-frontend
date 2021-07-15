@@ -24,7 +24,7 @@ const config: MenuEntry[] = [
   {
     label: 'Farms',
     icon: 'FarmIcon',
-    href: 'https://pantherswap.com/farms',
+    href: '/farms',
   },
   {
     label: 'Pools',

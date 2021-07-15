@@ -36,6 +36,8 @@ import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
 import { PoolPriceBar } from './PoolPriceBar'
 import { ROUTER_ADDRESS } from '../../constants'
 
+import BodyWrapper from "../BodyWrapper";
+
 const { italic: Italic } = TYPE
 
 export default function AddLiquidity({
@@ -289,7 +291,7 @@ export default function AddLiquidity({
   }, [onFieldAInput, txHash])
 
   return (
-    <>
+    <BodyWrapper>
       <CardNav activeIndex={1} />
       <AppBody>
         <AddRemoveTabs adding />
@@ -437,6 +439,6 @@ export default function AddLiquidity({
           <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
         </AutoColumn>
       ) : null}
-    </>
+    </BodyWrapper>
   )
 }
