@@ -1,5 +1,5 @@
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React from 'react'
 
 import styled from "styled-components";
 
@@ -7,7 +7,7 @@ import ToggleButton from "../../components/ToggleButton";
 import ToggleTabButton from "../../components/ToggleTabButton";
 import CardItem from "../../components/CardItem";
 
-import farmsList from "../../constants/farms/pattaya_farms.json"
+import poolsList from "../../constants/farms/pattaya_pools.json"
 
 
 const HeaderWrapper = styled.div`
@@ -87,12 +87,12 @@ const BodyWrapper = styled.div`
     
 `;
 
-const Farms = () => {
+const Pools = () => {
         return (
             <>
                 <HeaderWrapper>
                     <BorderWrapper>
-                        <h1 color="primary" style={headerStyle}>Stake LP Tokens to Earn PATTAYA</h1>
+                        <h1 color="primary" style={headerStyle}>Stake Tokens to Earn PATTAYA</h1>
                     </BorderWrapper>
                 </HeaderWrapper>
                 <BodyWrapper>
@@ -101,7 +101,7 @@ const Farms = () => {
                             <ToggleTabButton/>
                         </FilterContainer>
                         <Container>
-                            { farmsList.tokens.map((token) => {
+                            { poolsList.tokens.map((token) => {
                                 return <CardItem tokenName={token.name} pid={token.pid} tokenAddress={token.address} isLP={token.isLP} imageUrl={token.imageUrl}/>
                             })
                             }
@@ -111,4 +111,4 @@ const Farms = () => {
 };
 
 
-export default Farms
+export default Pools

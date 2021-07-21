@@ -19,6 +19,7 @@ import { TranslationsContext } from '../hooks/TranslationsContext'
 
 import Menu from '../components/Menu'
 import Farms from "./Farms";
+import Pools from "./Pools";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -103,6 +104,7 @@ export default function App() {
                       <Route exact strict path="/find" component={PoolFinder} />
                       <Route exact strict path="/pool" component={Pool} />
                       <Route exact strict path="/farms" component={Farms} />
+                      <Route exact strict path="/pools" component={Pools} />
                       <Route exact strict path="/farms/history" component={Farms} />
                       <Route exact path="/add" component={AddLiquidity} />
                       <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />

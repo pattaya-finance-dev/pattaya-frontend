@@ -2,10 +2,11 @@ import { createReducer } from '@reduxjs/toolkit'
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists'
 // eslint-disable-next-line import/no-unresolved
 import { TokenList } from '@uniswap/token-lists/dist/types'
-import { DEFAULT_LIST_OF_LISTS, DEFAULT_TOKEN_LIST_URL } from '../../constants/lists'
+import {DEFAULT_LIST_OF_LISTS, DEFAULT_LP_TOKEN_LIST_URL, DEFAULT_TOKEN_LIST_URL} from '../../constants/lists'
 import { updateVersion } from '../global/actions'
 import { acceptListUpdate, addList, fetchTokenList, removeList, selectList } from './actions'
 import DEFAULT_LIST from '../../constants/token/pantherswap.json'
+import DEFAULT_LP_LIST from '../../constants/token/pattaya_lp.json'
 
 export interface ListsState {
   readonly byUrl: {
@@ -40,6 +41,12 @@ const initialState: ListsState = {
     [DEFAULT_TOKEN_LIST_URL]: {
       error: null,
       current: DEFAULT_LIST,
+      loadingRequestId: null,
+      pendingUpdate: null,
+    },
+    [DEFAULT_LP_TOKEN_LIST_URL]: {
+      error: null,
+      current: DEFAULT_LP_LIST,
       loadingRequestId: null,
       pendingUpdate: null,
     },

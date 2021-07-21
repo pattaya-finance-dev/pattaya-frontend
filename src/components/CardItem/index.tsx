@@ -1,15 +1,35 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Button, useModal } from '@pattayaswap-dev-libs/uikit'
+import {Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, ChainId} from "@pattayaswap-dev-libs/sdk";
+
 import ConnectWalletButton from 'components/ConnectWalletButton'
 
+import {TransactionResponse} from "@ethersproject/providers";
+import {BigNumber} from "@ethersproject/bignumber";
+import {MaxUint256} from "@ethersproject/constants";
+
 import styled from "styled-components";
+import moment from 'moment';
+
 import QuestionHelper from "../QuestionHelper";
-import {ApprovalState} from "../../hooks/useApproveCallback";
+import {ApprovalState, useApproveCallback} from "../../hooks/useApproveCallback";
 import {Dots} from "../../pages/Pool/styleds";
-import {Field} from "../../state/mint/actions";
-import SettingsModal from "../PageHeader/SettingsModal";
 import ROIModal from "./ROIModal";
+import LinkICON from "../Icons/LinkIcon";
+import {useActiveWeb3React} from "../../hooks";
+import {RowBetween} from "../Row";
+import {MASTER_CHEF_ADDRESS} from "../../constants";
+import {useLPToken } from "../../hooks/Tokens";
+import {useCurrencyBalances} from "../../state/wallet/hooks";
+import DepositModal from "./DepositModal";
+import {calculateGasMargin, getMasterChefContract } from "../../utils";
+import {usePendingRewardBalances, usePoolInfo, useUserInfo} from "../../state/farms/hooks";
+import MinusIcon from "../Icons/MinusIcon";
+import PlusIcon from "../Icons/PlusIcon";
+import TimerIcon from "../Icons/TimerIcon";
+import HarvestCountdownModal from "./HarvestCoundownModal";
+
 
 const CardItemContainer = styled.div`
     align-self: baseline;
@@ -187,22 +207,6 @@ const ContentLink = styled.a`
     align-items: center;
 `
 
-const ContentLinkICONStyle :React.CSSProperties  =
-    {
-        paddingLeft: '4px',
-        height: '18px',
-        width: 'auto',
-        fill: '#D136FF'
-    }
-
-const ContentLinkICON = () => (
-    <svg viewBox="0 0 24 24" color="primary" width="20px" xmlns="http://www.w3.org/2000/svg" style={ContentLinkICONStyle} >
-        <path
-            d="M18 19H6C5.45 19 5 18.55 5 18V6C5 5.45 5.45 5 6 5H11C11.55 5 12 4.55 12 4C12 3.45 11.55 3 11 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V13C21 12.45 20.55 12 20 12C19.45 12 19 12.45 19 13V18C19 18.55 18.55 19 18 19ZM14 4C14 4.55 14.45 5 15 5H17.59L8.46 14.13C8.07 14.52 8.07 15.15 8.46 15.54C8.85 15.93 9.48 15.93 9.87 15.54L19 6.41V9C19 9.55 19.45 10 20 10C20.55 10 21 9.55 21 9V4C21 3.45 20.55 3 20 3H15C14.45 3 14 3.45 14 4Z"/>
-    </svg>
-)
-
-
 
 const CalculatorButton = styled.button`
     -webkit-box-align: center;
@@ -272,11 +276,21 @@ const ActionHarvestContainer = styled.div`
     margin-bottom: 8px;
 `
 
-const ActionHarvestAmountText = styled.div`
+const ActionHarvestAmountText = styled.h2`
+    text-align: left;
     font-size: 20px;
     font-weight: 600;
     line-height: 1.1;
     color: rgb(102, 97, 113);
+`
+
+const ActionHarvestAmountEstimateText = styled.div`
+    text-align: left;
+    color: #D136FF;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-top: 4px;
 `
 
 const ActionHarvestButtonContainer = styled.div`
@@ -286,6 +300,36 @@ const ActionHarvestButtonContainer = styled.div`
     -webkit-box-pack: justify;
     justify-content: space-between;
     flex-direction: column;
+`
+
+const ActionHarvestUpDownButton = styled.button`
+    padding: 0px;
+    width: 48px;
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: rgb(45, 47, 55);
+    border: 0px;
+    border-radius: 16px;
+    box-shadow: none;
+    color: rgb(255, 114, 13);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    height: 48px;
+    line-height: 1;
+    letter-spacing: 0.03em;
+    -webkit-box-pack: center;
+    justify-content: center;
+    outline: 0px;
+    transition: background-color 0.2s ease 0s;
+    opacity: 1;
+    margin-right: 6px;
+`
+
+const ActionHarvestUpDownContainer = styled.div`
+    display: flex;
 `
 
 const CardItemContentSeparator = styled.div`
@@ -334,10 +378,33 @@ const CommonLink = styled.a`
     text-decoration: none; 
 `
 
+const TimerDancingIconButton = styled.button`
+    height: 16px;
+    margin-left: auto;
+    padding: 0px;
+    width: 32px; 
+    
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: transparent;
+    border: 0px;
+    border-radius: 16px;
+    box-shadow: none;
+    color: rgb(255, 114, 13);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.03em;
+    -webkit-box-pack: center;
+    justify-content: center;
+    outline: 0px;
+    transition: background-color 0.2s ease 0s;
+    opacity: 1;
+`
 
-const onClick = () => {
-    console.log('TEST')
-}
 
 const ChevronIcon = ({ isUp }) => (
     !isUp ? <svg viewBox="0 0 24 24" color="text" width="20px" xmlns="http://www.w3.org/2000/svg" style={{fill: '#D136FF'}}>
@@ -349,27 +416,131 @@ const ChevronIcon = ({ isUp }) => (
     </svg>
 )
 
-const CardItem = () => {
+const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl}) => {
 
     const [isShowDetails, setIsShowDetails] = useState<boolean>(false)
+    const { account, chainId, library } = useActiveWeb3React()
+
+    const tokenA : Token = useLPToken(tokenAddress) as Token;
+
+    const approveAmount: TokenAmount = new TokenAmount(tokenA, BigInt(BigNumber.from(50).mul(10).pow(18)))
+
+    const balances: (CurrencyAmount | undefined)[] = useCurrencyBalances(account ?? undefined, [
+        tokenA
+    ])
+
+    const [nextHarvestUntil, staked] = useUserInfo(pid, account || '', tokenA);
+    const [depositFee, harvestInterval] = usePoolInfo(pid);
+    const reward = usePendingRewardBalances(pid, account || '', tokenA);
+    const hasStaked = useMemo(() => JSBI.greaterThan(staked.raw,JSBI.BigInt(0)) ,[staked])
+    const hasReward = useMemo(() => JSBI.greaterThan(reward.raw,JSBI.BigInt(0)) ,[reward])
+
+    const [canHarvest] = useMemo(() => {
+       const duration = moment.unix(nextHarvestUntil.toNumber()).diff(moment());
+       return [duration < 0]
+    },[nextHarvestUntil])
+
+    const [depositFeePercent, harvestIntervalHour] = useMemo(() => {
+        const hours = moment.duration(harvestInterval.toNumber(),'seconds').hours()
+        return [depositFee.toNumber() / 100, hours]
+    },[depositFee, harvestInterval])
+
+    const [approvalA, approveACallback] = useApproveCallback(approveAmount, MASTER_CHEF_ADDRESS)
     const onDetailsToggle = useCallback(() => { setIsShowDetails(!isShowDetails) }, [isShowDetails])
     const [onPresentRoi] = useModal(<ROIModal />)
+    const [onPresentHarvestCountDown] = useModal(<HarvestCountdownModal lockUpHour={harvestIntervalHour} tokenName={tokenName} nextHarvestUntil={nextHarvestUntil}/>)
+
+    const onWithdraw = useCallback(async (amount) => {
+        if (!chainId || !library || !account) return
+        const router = getMasterChefContract(chainId, library, account)
+
+
+        const estimate = router.estimateGas.withdraw
+        const method: (...args: any) => Promise<TransactionResponse> = router.withdraw
+        const value: BigNumber | null = null;
+        const args: Array<string | string[] | number> = [
+            pid,
+            amount,
+        ]
+
+        // setAttemptingTxn(true)
+        // const aa = await estimate(...args, value ? { value } : {})
+        await estimate(...args, value ? { value } : {})
+            .then((estimatedGasLimit) =>
+                method(...args, {
+                    ...(value ? { value } : {}),
+                    gasLimit: calculateGasMargin(estimatedGasLimit),
+                }).then((response) => {
+                    console.log(response.hash);
+                })
+            )
+            .catch((e) => {
+                // setAttemptingTxn(false)
+                // we only care if the error is something _other_ than the user rejected the tx
+                if (e?.code !== 4001) {
+                    console.error(e)
+                }
+            })
+    }, [pid, account,library,chainId])
+
+    const onAdd = useCallback(async (amount) => {
+        if (!chainId || !library || !account) return
+        const router = getMasterChefContract(chainId, library, account)
+
+
+        const estimate = router.estimateGas.deposit
+        const method: (...args: any) => Promise<TransactionResponse> = router.deposit
+        const value: BigNumber | null = null;
+        const args: Array<string | string[] | number> = [
+            pid,
+            amount,
+            '0x0000000000000000000000000000000000000000'
+        ]
+
+        // setAttemptingTxn(true)
+        // const aa = await estimate(...args, value ? { value } : {})
+        await estimate(...args, value ? { value } : {})
+            .then((estimatedGasLimit) =>
+                method(...args, {
+                    ...(value ? { value } : {}),
+                    gasLimit: calculateGasMargin(estimatedGasLimit),
+                }).then((response) => {
+                    console.log(response.hash);
+                })
+            )
+            .catch((e) => {
+                // setAttemptingTxn(false)
+                // we only care if the error is something _other_ than the user rejected the tx
+                if (e?.code !== 4001) {
+                    console.error(e)
+                }
+            })
+    }, [pid,account,library,chainId])
+
+
+    const depositTitle = balances[0] ? `Deposit ${balances[0].currency.name}` : '...'
+    const withdrawTitle = balances[0] ? `Withdraw ${balances[0].currency.name}` : '...'
+    const [onPresentStake] = useModal(<DepositModal title={depositTitle} balance={balances[0] || undefined} onAdd={onAdd} depositFeePercent={depositFeePercent}/>)
+    const [onPresentUnStake] = useModal(<DepositModal title={withdrawTitle} balance={staked || undefined} onAdd={onWithdraw}/>)
+    const onHarvestClick = useCallback(() => { onAdd(0) }, [onAdd])
 
     return  (
         <>
             <CardItemContainer>
                 <CardAura/>
                 <ContentHeader>
-                    <HeaderICON>
-                        <HeaderImg src="/images/pairs/pattaya_wbnb.png" alt="PATTAYA" />
+                    <HeaderICON style={!isLP ? {maxWidth : '64px'} : {}}>
+                        <HeaderImg src={imageUrl} alt="PATTAYA" />
                     </HeaderICON>
                     <HeaderTitle>
-                        <HeaderTitleText>PATTAYA-BNB LP</HeaderTitleText>
+                        <HeaderTitleText>{tokenName}</HeaderTitleText>
                         <HeaderTitleBadge>
-                            <ICONBadge>
+                            {depositFeePercent === 0 ? <ICONBadge>
                                 <NOFeesIcon/>
                                 No Fees
                             </ICONBadge>
+                                : null
+                            }
                             <MultiplyBadge>40X</MultiplyBadge>
                         </HeaderTitleBadge>
                     </HeaderTitle>
@@ -392,7 +563,7 @@ const CardItem = () => {
                 <ContentRow>
                     <ContentField>Deposit Fee:</ContentField>
                     <ContentValue>
-                        0%
+                        {depositFeePercent}%
                     </ContentValue>
                 </ContentRow>
                 <ContentRow>
@@ -400,36 +571,97 @@ const CardItem = () => {
                     <QuestionHelper text='How soon can you harvest or compound again.' />
                     </ContentField>
                     <ContentValue>
-                        2 Hour(s)
+                        {harvestIntervalHour} Hour(s)
                     </ContentValue>
                 </ContentRow>
-                <ContentRow>
-                    <ContentField>LP Type:</ContentField>
-                    <ContentValue>
-                       PATTAYA-LP
-                    </ContentValue>
-                </ContentRow>
+                {isLP ?
+                    <ContentRow>
+                        <ContentField>LP Type:</ContentField>
+                        <ContentValue>
+                            PATTAYA-LP
+                        </ContentValue>
+                    </ContentRow>
+                    : null
+                }
                 <ActionContainer>
                     <ActionEarn>
                         <ActionEarnText style={{ marginBottom: '8px', color:'#ffffff', paddingRight: '3px'}}>PATTAYA</ActionEarnText>
                         <ActionEarnText>EARNED</ActionEarnText>
+                        {   !canHarvest ?
+                            <TimerDancingIconButton onClick={onPresentHarvestCountDown}>
+                                <TimerIcon/>
+                            </TimerDancingIconButton>
+                            : null
+                        }
                     </ActionEarn>
                 </ActionContainer>
                 <ActionHarvestContainer>
-                       <ActionHarvestAmountText>0</ActionHarvestAmountText>
-                       <ActionHarvestButtonContainer>
-                           <Button onClick={onClick} disabled >
+                    <div>
+                        <ActionHarvestAmountText style={hasReward ? {color :'#FFFFFF'} : {}}>{reward.toSignificant()}</ActionHarvestAmountText>
+                        { hasReward ?
+                            <ActionHarvestAmountEstimateText>~$14.22</ActionHarvestAmountEstimateText>
+                            : null
+                        }
+                    </div>
+                    <ActionHarvestButtonContainer>
+                           <Button onClick={onHarvestClick} disabled={!reward.greaterThan(BigInt(0)) || !canHarvest} >
                                Harvest
                            </Button>
                        </ActionHarvestButtonContainer>
                 </ActionHarvestContainer>
                 <ActionContainer>
                     <ActionEarn>
-                        <ActionEarnText style={{ marginBottom: '8px', color:'#ffffff', paddingRight: '3px'}}>PATTAYA-BNB LP</ActionEarnText>
+                        <ActionEarnText style={{ marginBottom: '8px', color:'#ffffff', paddingRight: '3px'}}>{tokenName}</ActionEarnText>
                         <ActionEarnText>STAKED</ActionEarnText>
                     </ActionEarn>
                 </ActionContainer>
+
+                {!account ? (
                 <ConnectWalletButton fullWidth />
+                    ) : (( approvalA === ApprovalState.NOT_APPROVED ||
+                    approvalA === ApprovalState.PENDING)
+                    ? (
+                        <RowBetween>
+                            (
+                                <Button
+                                    onClick={approveACallback}
+                                    disabled={approvalA === ApprovalState.PENDING}
+                                    style={{ width: '100%' }}
+                                >
+                                    {approvalA === ApprovalState.PENDING ? (
+                                        <Dots>Approving Contract</Dots>
+                                    ) : (
+                                        `Approve Contract`
+                                    )}
+                                </Button>
+                            )
+                        </RowBetween>
+                    ) :  <ActionHarvestContainer>
+                        <div>
+                            <ActionHarvestAmountText style={hasStaked ? {color :'#FFFFFF'} : {}}>{staked.toSignificant()}</ActionHarvestAmountText>
+                            { hasStaked ?
+                                <ActionHarvestAmountEstimateText>~$14.22</ActionHarvestAmountEstimateText>
+                                : null
+                            }
+                        </div>
+                        { hasStaked ?
+                            <ActionHarvestUpDownContainer>
+                                <ActionHarvestUpDownButton onClick={onPresentUnStake}>
+                                    <MinusIcon/>
+                                </ActionHarvestUpDownButton>
+                                <ActionHarvestUpDownButton onClick={onPresentStake}>
+                                    <PlusIcon/>
+                                </ActionHarvestUpDownButton>
+                            </ActionHarvestUpDownContainer>
+                            :
+                            <ActionHarvestButtonContainer>
+                                <Button onClick={onPresentStake}>
+                                    Stake
+                                </Button>
+                            </ActionHarvestButtonContainer>
+                        }
+                    </ActionHarvestContainer>)
+                }
                 <CardItemContentSeparator />
                 <CardMoreDetailsButton onClick={onDetailsToggle}>
                     <CardMoreDetailsText>{isShowDetails ? 'Hide' : 'Details'}</CardMoreDetailsText>
@@ -439,9 +671,9 @@ const CardItem = () => {
                     <div style={{marginTop:'24px'}} />
                     <ContentRow>
                         <ContentField>Deposit:</ContentField>
-                        <ContentLink href="/test_link">
-                            PATTAYA-BNB LP
-                            <ContentLinkICON/>
+                        <ContentLink href="/add">
+                            {tokenName}
+                            <LinkICON/>
                         </ContentLink>
                     </ContentRow>
                     <ContentRow>
@@ -451,13 +683,13 @@ const CardItem = () => {
                         </ContentValue>
                     </ContentRow>
                     <ContentRow>
-                        <ContentField>LP Worth:</ContentField>
+                        <ContentField>{isLP ? 'LP' : 'Token'} Worth:</ContentField>
                         <ContentValue style={{fontWeight: 'normal'}}>
                             $0.73
                         </ContentValue>
                     </ContentRow>
                     <CommonLinkContainer>
-                        <CommonLink target='_blank' href='https://bscscan.com/token/0x9287f5ad55d7ee8eae90b865718eb9a7cf3fb71a'>
+                        <CommonLink target='_blank' href={`https://${chainId === ChainId.BSCTESTNET ? 'testnet.' : ''}bscscan.com/token/${tokenAddress}`}>
                             View on BscScan
                         </CommonLink>
                     </CommonLinkContainer>

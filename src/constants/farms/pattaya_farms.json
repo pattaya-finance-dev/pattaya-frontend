@@ -1,0 +1,11 @@
+{
+  "tokens": [
+    {
+      "name": "PATTAYA-BNB LP",
+      "address": "0x2eea044c6e813962e47600187d0aCFC4b75a1c7B",
+      "imageUrl": "/images/pairs/pattaya_wbnb.png",
+      "isLP" : true,
+      "pid" : 0
+    }
+  ]
+}

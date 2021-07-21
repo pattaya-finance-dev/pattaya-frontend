@@ -1,0 +1,18 @@
+{
+  "tokens": [
+    {
+      "name": "WBNB",
+      "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+      "imageUrl": "/images/pairs/wbnb.png",
+      "isLP" : false,
+      "pid" : 1
+    },
+    {
+      "name": "BUSD",
+      "address": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
+      "imageUrl": "/images/pairs/busd.png",
+      "isLP" : false,
+      "pid" : 2
+    }
+  ]
+}
