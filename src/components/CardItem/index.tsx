@@ -31,6 +31,7 @@ import TimerIcon from "../Icons/TimerIcon";
 import HarvestCountdownModal from "./HarvestCoundownModal";
 
 
+
 const CardItemContainer = styled.div`
     align-self: baseline;
     background: rgb(18, 24, 39);
@@ -416,7 +417,9 @@ const ChevronIcon = ({ isUp }) => (
     </svg>
 )
 
-const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl}) => {
+
+
+const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
 
     const [isShowDetails, setIsShowDetails] = useState<boolean>(false)
     const { account, chainId, library } = useActiveWeb3React()
@@ -429,9 +432,9 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl}) => {
         tokenA
     ])
 
-    const [nextHarvestUntil, staked] = useUserInfo(pid, account || '', tokenA);
+    const [nextHarvestUntil, staked] = useUserInfo(pid, account ?? undefined , tokenA);
     const [depositFee, harvestInterval] = usePoolInfo(pid);
-    const reward = usePendingRewardBalances(pid, account || '', tokenA);
+    const reward = usePendingRewardBalances(pid, account ?? undefined, tokenA);
     const hasStaked = useMemo(() => JSBI.greaterThan(staked.raw,JSBI.BigInt(0)) ,[staked])
     const hasReward = useMemo(() => JSBI.greaterThan(reward.raw,JSBI.BigInt(0)) ,[reward])
 
@@ -494,7 +497,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl}) => {
         const args: Array<string | string[] | number> = [
             pid,
             amount,
-            '0x0000000000000000000000000000000000000000'
+            referrer ?? '0x0000000000000000000000000000000000000000'
         ]
 
         // setAttemptingTxn(true)
@@ -515,7 +518,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl}) => {
                     console.error(e)
                 }
             })
-    }, [pid,account,library,chainId])
+    }, [pid,account,library,chainId,referrer])
 
 
     const depositTitle = balances[0] ? `Deposit ${balances[0].currency.name}` : '...'

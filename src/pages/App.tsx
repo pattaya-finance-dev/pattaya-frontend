@@ -1,8 +1,8 @@
 import React, { Suspense, useEffect, useState } from 'react'
-import { HashRouter, Route, Switch } from 'react-router-dom'
+import {Route, Switch, BrowserRouter} from 'react-router-dom'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
-import VersionBar from '../components/VersionBar'
+
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import { RedirectDuplicateTokenIds, RedirectOldAddLiquidityPathStructure } from './AddLiquidity/redirects'
@@ -20,6 +20,7 @@ import { TranslationsContext } from '../hooks/TranslationsContext'
 import Menu from '../components/Menu'
 import Farms from "./Farms";
 import Pools from "./Pools";
+import Referrals from "./Referrals";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -90,7 +91,7 @@ export default function App() {
 
   return (
     <Suspense fallback={null}>
-      <HashRouter>
+      <BrowserRouter>
         <AppWrapper>
           <LanguageContext.Provider
             value={{ selectedLanguage, setSelectedLanguage, translatedLanguage, setTranslatedLanguage }}
@@ -106,6 +107,7 @@ export default function App() {
                       <Route exact strict path="/farms" component={Farms} />
                       <Route exact strict path="/pools" component={Pools} />
                       <Route exact strict path="/farms/history" component={Farms} />
+                      <Route exact strict path="/referrals" component={Referrals} />
                       <Route exact path="/add" component={AddLiquidity} />
                       <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
 
@@ -122,7 +124,7 @@ export default function App() {
             </TranslationsContext.Provider>
           </LanguageContext.Provider>
         </AppWrapper>
-      </HashRouter>
+      </BrowserRouter>
     </Suspense>
   )
 }

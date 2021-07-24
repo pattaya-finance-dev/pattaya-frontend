@@ -2,6 +2,7 @@ import { ChainId, JSBI, Percent, Token, WETH } from '@pattayaswap-dev-libs/sdk'
 
 export const ROUTER_ADDRESS = '0xBD351b7073a6B5bbbEaC57b51ba836Cbc9372A76'
 export const MASTER_CHEF_ADDRESS = '0x60577D078713EADe6360e7ba7014321a63370B74'
+export const REFERRAL_ADDRESS = '0xFACa819cab93638087aC490698f5797Ac393fE42'
 
 // a list of tokens by chain
 type ChainTokenList = {
@@ -18,6 +19,8 @@ export const UST = new Token(
     'UST',
     'Wrapped UST Token'
 )
+
+export const PATTAYA = new Token(ChainId.BSCTESTNET, '0xd7Cf8c8e4750972fcF40eec469a4DECEA1C92812', 18, 'PATTAYA', 'Pattaya Token')
 
 
 /* export const DAI = new Token(ChainId.MAINNET, '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3', 18, 'DAI', 'Dai Stablecoin')
@@ -77,7 +80,7 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
   ], */
   [ChainId.BSCTESTNET]: [
         [
-            new Token(ChainId.BSCTESTNET, '0xd7Cf8c8e4750972fcF40eec469a4DECEA1C92812', 18, 'PATTAYA', 'Pattaya Token'),
+            PATTAYA,
             new Token(ChainId.BSCTESTNET, '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd', 18, 'WBNB', 'Wrapped BNB'),
         ],
         [BUSD, USDT],

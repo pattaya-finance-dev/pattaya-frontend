@@ -201,7 +201,6 @@ const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, dep
 
     const onDepositClick = useCallback(() => {
         setIsPending(true)
-        console.log(parseValue(inputAmount))
         onAdd(parseValue(inputAmount))
     },[inputAmount, onAdd]);
 

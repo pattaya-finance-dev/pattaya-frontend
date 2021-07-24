@@ -34,7 +34,7 @@ const config: MenuEntry[] = [
   {
     label: 'Referrals',
     icon: 'ReferralIcon',
-    href: 'https://pantherswap.com/referrals',
+    href: '/referrals',
   },
   {
     label: 'Audits',

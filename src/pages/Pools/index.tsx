@@ -1,6 +1,7 @@
 
-import React from 'react'
+import React, {useMemo} from 'react'
 
+import qs from 'qs';
 import styled from "styled-components";
 
 import ToggleButton from "../../components/ToggleButton";
@@ -8,6 +9,7 @@ import ToggleTabButton from "../../components/ToggleTabButton";
 import CardItem from "../../components/CardItem";
 
 import poolsList from "../../constants/farms/pattaya_pools.json"
+import {decrypt} from "../../utils/cryptography";
 
 
 const HeaderWrapper = styled.div`
@@ -87,7 +89,14 @@ const BodyWrapper = styled.div`
     
 `;
 
-const Pools = () => {
+const Pools = ({location}) => {
+
+    const referral = useMemo(() => {
+        const queryString = location.search.split('?')[1]
+        const queryObj = qs.parse(queryString);
+        return decrypt(queryObj.ref);
+    },[location])
+
         return (
             <>
                 <HeaderWrapper>
@@ -102,7 +111,7 @@ const Pools = () => {
                         </FilterContainer>
                         <Container>
                             { poolsList.tokens.map((token) => {
-                                return <CardItem tokenName={token.name} pid={token.pid} tokenAddress={token.address} isLP={token.isLP} imageUrl={token.imageUrl}/>
+                                return <CardItem referrer={referral} tokenName={token.name} pid={token.pid} tokenAddress={token.address} isLP={token.isLP} imageUrl={token.imageUrl}/>
                             })
                             }
                         </Container>

@@ -28,7 +28,7 @@ export function usePoolInfo(
 
 export function useUserInfo(
     pid: number,
-    userAddress: string,
+    userAddress: string | undefined,
     token: Token,
 ): [BigNumber, TokenAmount] {
 
@@ -49,7 +49,7 @@ export function useUserInfo(
 
 export function usePendingRewardBalances(
     pid: number,
-    userAddress: string,
+    userAddress: string | undefined,
     token: Token,
 ): TokenAmount {
     const masterChefAddress : (string|undefined)[] = [MASTER_CHEF_ADDRESS];
