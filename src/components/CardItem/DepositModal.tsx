@@ -188,7 +188,7 @@ const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, dep
     balance?: CurrencyAmount
     onDismiss?: () => void
     onAdd: (string) => void
-    depositFeePercent?: number
+    depositFeePercent?: number | null
   }) => {
 
     const [inputAmount, setInputAmount] = useState('');
@@ -207,8 +207,12 @@ const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, dep
     console.log(onDepositClick);
 
     const depositFee = useMemo(() => {
-        const input = parseFloat(inputAmount)
-        return depositFeePercent !== undefined ? (input * depositFeePercent / 100) : 0
+        if(depositFeePercent !== null) {
+            const input = parseFloat(inputAmount)
+            return depositFeePercent !== undefined ? (input * depositFeePercent / 100) : 0
+        }
+
+        return 0
     },[depositFeePercent,inputAmount])
 
     const parseValue = (input) => {

@@ -1,5 +1,5 @@
 
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 
 import qs from 'qs';
 import styled from "styled-components";
@@ -91,10 +91,20 @@ const BodyWrapper = styled.div`
 
 const Pools = ({location}) => {
 
+    const [isStaked, setIsStaked] = useState<boolean>(false)
+
+    const toggleIsStaked = useCallback(() => {
+        setIsStaked(!isStaked)
+    },[isStaked])
+
     const referral = useMemo(() => {
         const queryString = location.search.split('?')[1]
-        const queryObj = qs.parse(queryString);
-        return decrypt(queryObj.ref);
+        if(queryString) {
+            const queryObj = qs.parse(queryString);
+            return decrypt(queryObj.ref);
+        }
+
+        return null;
     },[location])
 
         return (
@@ -106,12 +116,12 @@ const Pools = ({location}) => {
                 </HeaderWrapper>
                 <BodyWrapper>
                         <FilterContainer>
-                            <ToggleButton/>
+                            <ToggleButton toggleCallback={toggleIsStaked}/>
                             <ToggleTabButton/>
                         </FilterContainer>
                         <Container>
                             { poolsList.tokens.map((token) => {
-                                return <CardItem referrer={referral} tokenName={token.name} pid={token.pid} tokenAddress={token.address} isLP={token.isLP} imageUrl={token.imageUrl}/>
+                                return <CardItem referrer={referral} tokenName={token.name} pid={token.pid} tokenAddress={token.address} isLP={token.isLP} imageUrl={token.imageUrl} isStaked={isStaked} isHot={token.isHot}/>
                             })
                             }
                         </Container>

@@ -1,10 +1,19 @@
 {
   "tokens": [
     {
+      "name": "PATTAYA",
+      "address": "0xd7Cf8c8e4750972fcF40eec469a4DECEA1C92812",
+      "imageUrl": "/images/pairs/pattaya.png",
+      "isLP" : false,
+      "isHot" : true,
+      "pid" : 3
+    },
+    {
       "name": "WBNB",
       "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
       "imageUrl": "/images/pairs/wbnb.png",
       "isLP" : false,
+      "isHot" : false,
       "pid" : 1
     },
     {
@@ -12,6 +21,7 @@
       "address": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
       "imageUrl": "/images/pairs/busd.png",
       "isLP" : false,
+      "isHot" : false,
       "pid" : 2
     }
   ]

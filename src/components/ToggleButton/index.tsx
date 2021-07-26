@@ -72,10 +72,10 @@ const ToggleBody = styled.div`
     width: 72px;
 `
 
-const ToggleButton = () => {
+const ToggleButton = ({toggleCallback}) => {
 
     const [isActive, setIsActive] = useState<boolean>(false)
-    const toggleIsActive = useCallback(() => { setIsActive(!isActive) }, [isActive])
+    const toggleIsActive = useCallback(() => { toggleCallback(!isActive); setIsActive(!isActive) }, [toggleCallback, isActive])
 
     return  (
         <>

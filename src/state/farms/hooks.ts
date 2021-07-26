@@ -9,7 +9,7 @@ import { MASTER_CHEF_ADDRESS } from "../../constants";
 
 export function usePoolInfo(
     pid: number
-): [BigNumber, BigNumber] {
+): [BigNumber, BigNumber, BigNumber] | [null, null, null] {
 
     const masterChefAddress : (string|undefined)[] = [MASTER_CHEF_ADDRESS];
     const results = useMultipleContractSingleData(masterChefAddress, MasterChef_ABI, 'poolInfo', [pid])
@@ -17,9 +17,9 @@ export function usePoolInfo(
     return useMemo(
         () => {
             const { result: poolInfo, loading } = results[0]
-            if (!poolInfo) return [BigNumber.from(0), BigNumber.from(0)]
-            const { depositFeeBP, harvestInterval } = poolInfo;
-            return [BigNumber.from(depositFeeBP.toString()), BigNumber.from(harvestInterval)];
+            if (!poolInfo) return [null, null, null]
+            const { depositFeeBP, harvestInterval, allocPoint } = poolInfo;
+            return [BigNumber.from(depositFeeBP.toString()), BigNumber.from(harvestInterval), BigNumber.from(allocPoint)];
         },
         [results]
     )
@@ -37,10 +37,14 @@ export function useUserInfo(
 
     return useMemo(
             () => {
-                    const { result: userInfo, loading } = results[0]
-                    if (!userInfo) return [BigNumber.from(0), new TokenAmount(token , BigInt(0))]
-                    const { amount, nextHarvestUntil } = userInfo;
-                    return [BigNumber.from(nextHarvestUntil.toString()), new TokenAmount(token ,amount.toString())];
+                    if(results[0]) {
+                        const {result: userInfo, loading} = results[0]
+                        if (!userInfo) return [BigNumber.from(0), new TokenAmount(token, BigInt(0))]
+                        const {amount, nextHarvestUntil} = userInfo;
+                        return [BigNumber.from(nextHarvestUntil.toString()), new TokenAmount(token, amount.toString())];
+                    }
+
+                    return [BigNumber.from(0), new TokenAmount(token, BigInt(0))]
             },
             [results,token]
         )
@@ -57,8 +61,12 @@ export function usePendingRewardBalances(
 
     return useMemo(
         () => {
-            const { result, loading } = results[0]
-            return new TokenAmount(token ,result ? result.toString() : BigInt(0));
+            if(results[0]) {
+                const {result, loading} = results[0]
+                return new TokenAmount(token, result ? result.toString() : BigInt(0));
+            }
+
+            return new TokenAmount(token,  BigInt(0));
         },
         [results,token]
     )

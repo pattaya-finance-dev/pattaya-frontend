@@ -34,7 +34,7 @@ import HarvestCountdownModal from "./HarvestCoundownModal";
 
 const CardItemContainer = styled.div`
     align-self: baseline;
-    background: rgb(18, 24, 39);
+    background: #262626;
     border-radius: 32px;
     box-shadow: rgb(25 19 38 / 10%) 0px 2px 12px -8px, rgb(25 19 38 / 5%) 0px 1px 1px;
     display: flex;
@@ -419,10 +419,11 @@ const ChevronIcon = ({ isUp }) => (
 
 
 
-const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
+const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isStaked, isHot}) => {
 
     const [isShowDetails, setIsShowDetails] = useState<boolean>(false)
     const { account, chainId, library } = useActiveWeb3React()
+
 
     const tokenA : Token = useLPToken(tokenAddress) as Token;
 
@@ -433,7 +434,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
     ])
 
     const [nextHarvestUntil, staked] = useUserInfo(pid, account ?? undefined , tokenA);
-    const [depositFee, harvestInterval] = usePoolInfo(pid);
+    const [depositFee, harvestInterval, allocationPoint] = usePoolInfo(pid);
     const reward = usePendingRewardBalances(pid, account ?? undefined, tokenA);
     const hasStaked = useMemo(() => JSBI.greaterThan(staked.raw,JSBI.BigInt(0)) ,[staked])
     const hasReward = useMemo(() => JSBI.greaterThan(reward.raw,JSBI.BigInt(0)) ,[reward])
@@ -444,8 +445,13 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
     },[nextHarvestUntil])
 
     const [depositFeePercent, harvestIntervalHour] = useMemo(() => {
-        const hours = moment.duration(harvestInterval.toNumber(),'seconds').hours()
-        return [depositFee.toNumber() / 100, hours]
+        if(depositFee !== null && harvestInterval !== null) {
+            const hours = moment.duration(harvestInterval.toNumber(), 'seconds').hours()
+            return [depositFee.toNumber() / 100, hours]
+        }
+
+
+        return [null, null]
     },[depositFee, harvestInterval])
 
     const [approvalA, approveACallback] = useApproveCallback(approveAmount, MASTER_CHEF_ADDRESS)
@@ -527,10 +533,12 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
     const [onPresentUnStake] = useModal(<DepositModal title={withdrawTitle} balance={staked || undefined} onAdd={onWithdraw}/>)
     const onHarvestClick = useCallback(() => { onAdd(0) }, [onAdd])
 
+    if(isStaked && staked.equalTo(BigInt(0))) return null;
+
     return  (
         <>
             <CardItemContainer>
-                <CardAura/>
+                { isHot === true ? <CardAura/> : null }
                 <ContentHeader>
                     <HeaderICON style={!isLP ? {maxWidth : '64px'} : {}}>
                         <HeaderImg src={imageUrl} alt="PATTAYA" />
@@ -544,7 +552,10 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer}) => {
                             </ICONBadge>
                                 : null
                             }
-                            <MultiplyBadge>40X</MultiplyBadge>
+                            { allocationPoint !== null && allocationPoint.gt(BigNumber.from(1)) ?
+                                <MultiplyBadge>{allocationPoint.toNumber()}X</MultiplyBadge>
+                                : null
+                            }
                         </HeaderTitleBadge>
                     </HeaderTitle>
                 </ContentHeader>

@@ -6,7 +6,7 @@ import moment from 'moment';
 import {BigNumber} from "@ethersproject/bignumber";
 
 type HarvestModalProps = {
-    lockUpHour: number
+    lockUpHour: number | null
     tokenName: string
     nextHarvestUntil: BigNumber
     onDismiss?: () => void
@@ -57,7 +57,7 @@ const HarvestCountdownModal = ({ lockUpHour, tokenName, nextHarvestUntil , onDis
                 Pool: {tokenName}
             </DisabledTextContainer>
             <DisabledTextContainer>
-                Harvest Lockup: {lockUpHour} Hour(s)
+                Harvest Lockup: {lockUpHour ?? 'N/A'} Hour(s)
             </DisabledTextContainer>
         </Modal>
     )
