@@ -3,7 +3,8 @@ import React, {useCallback, useMemo, useState} from 'react'
 import { Modal } from '@pattayaswap-dev-libs/uikit'
 
 import styled from "styled-components";
-import {Currency, CurrencyAmount, JSBI, Token, TokenAmount} from "@pattayaswap-dev-libs/sdk";
+import {Currency, CurrencyAmount, JSBI, Token, TokenAmount, WETH} from "@pattayaswap-dev-libs/sdk";
+import {PATTAYA} from "../../constants";
 
 
 const TokenAvailalableContainer = styled.div`
@@ -182,12 +183,14 @@ const DepositFeeContainer = styled.div`
 
 const defaultOnDismiss = () => null
 
+type voidFunc = () => void;
+
 const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, depositFeePercent }:
   {
     title: string
     balance?: CurrencyAmount
-    onDismiss?: () => void
-    onAdd: (string) => void
+    onDismiss?: voidFunc
+    onAdd: (string,voidFunc) => void
     depositFeePercent?: number | null
   }) => {
 
@@ -197,14 +200,14 @@ const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, dep
     const currencyName = balance !== undefined ? balance.currency.name : 'N/A';
     const currencyAvailable = balance !== undefined ? balance.toFixed(2) : 0;
 
-    const onMaxClick = useCallback(() => { if(balance !== undefined) setInputAmount(balance.toSignificant().toString())}, [balance])
+    const onMaxClick = useCallback(() => { if(balance !== undefined) setInputAmount(balance.toFixed(18).toString())}, [balance])
 
     const onDepositClick = useCallback(() => {
-        setIsPending(true)
-        onAdd(parseValue(inputAmount))
-    },[inputAmount, onAdd]);
-
-    console.log(onDepositClick);
+        if(balance) {
+            setIsPending(true)
+            onAdd(parseValue(inputAmount, balance.currency), onDismiss)
+        }
+    },[balance, inputAmount, onAdd, onDismiss]);
 
     const depositFee = useMemo(() => {
         if(depositFeePercent !== null) {
@@ -215,8 +218,8 @@ const DepositModal = ({ title, balance, onDismiss = defaultOnDismiss, onAdd, dep
         return 0
     },[depositFeePercent,inputAmount])
 
-    const parseValue = (input) => {
-       return JSBI.BigInt(parseFloat(input) * 10**18).toString();
+    const parseValue = (input, currency?) => {
+       return new TokenAmount(currency, BigInt(parseFloat(input) * 10**18));
     }
 
     return (

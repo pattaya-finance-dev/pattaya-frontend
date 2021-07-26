@@ -1,5 +1,5 @@
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import { Button, useModal } from '@pattayaswap-dev-libs/uikit'
 import {Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, ChainId} from "@pattayaswap-dev-libs/sdk";
 
@@ -29,6 +29,8 @@ import MinusIcon from "../Icons/MinusIcon";
 import PlusIcon from "../Icons/PlusIcon";
 import TimerIcon from "../Icons/TimerIcon";
 import HarvestCountdownModal from "./HarvestCoundownModal";
+import {useTransactionAdder} from "../../state/transactions/hooks";
+import {Field} from "../../state/mint/actions";
 
 
 
@@ -424,6 +426,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
     const [isShowDetails, setIsShowDetails] = useState<boolean>(false)
     const { account, chainId, library } = useActiveWeb3React()
 
+    const addTransaction = useTransactionAdder()
 
     const tokenA : Token = useLPToken(tokenAddress) as Token;
 
@@ -459,7 +462,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
     const [onPresentRoi] = useModal(<ROIModal />)
     const [onPresentHarvestCountDown] = useModal(<HarvestCountdownModal lockUpHour={harvestIntervalHour} tokenName={tokenName} nextHarvestUntil={nextHarvestUntil}/>)
 
-    const onWithdraw = useCallback(async (amount) => {
+    const onWithdraw = useCallback(async (amount, onDismiss) => {
         if (!chainId || !library || !account) return
         const router = getMasterChefContract(chainId, library, account)
 
@@ -469,7 +472,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
         const value: BigNumber | null = null;
         const args: Array<string | string[] | number> = [
             pid,
-            amount,
+            amount.toNumber(),
         ]
 
         // setAttemptingTxn(true)
@@ -480,19 +483,23 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
                     ...(value ? { value } : {}),
                     gasLimit: calculateGasMargin(estimatedGasLimit),
                 }).then((response) => {
-                    console.log(response.hash);
+                    if(onDismiss) onDismiss();
+
+                    addTransaction(response, {
+                        summary: `Withdraw ${amount.toSignificant(3)} ${tokenName} from ${isLP ? 'Farms' : 'Pools'}`,
+                    })
                 })
             )
             .catch((e) => {
-                // setAttemptingTxn(false)
+                if(onDismiss) onDismiss();
                 // we only care if the error is something _other_ than the user rejected the tx
                 if (e?.code !== 4001) {
                     console.error(e)
                 }
             })
-    }, [pid, account,library,chainId])
+    }, [pid, account,library,chainId, isLP, tokenName, addTransaction])
 
-    const onAdd = useCallback(async (amount) => {
+    const onAdd = useCallback(async (amount: TokenAmount, onDismiss?) => {
         if (!chainId || !library || !account) return
         const router = getMasterChefContract(chainId, library, account)
 
@@ -502,7 +509,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
         const value: BigNumber | null = null;
         const args: Array<string | string[] | number> = [
             pid,
-            amount,
+            amount.raw.toString(),
             referrer ?? '0x0000000000000000000000000000000000000000'
         ]
 
@@ -514,24 +521,30 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
                     ...(value ? { value } : {}),
                     gasLimit: calculateGasMargin(estimatedGasLimit),
                 }).then((response) => {
-                    console.log(response.hash);
+                    // console.log(response.hash);
+                    if(onDismiss) onDismiss();
+                    const isHarvest= amount.greaterThan(BigInt(0))
+                    addTransaction(response, {
+                        summary: `${isHarvest ? 'Deposit' : 'Harvest'}${isHarvest ? ` ${amount.toSignificant(3)} ` : ''}${tokenName} from ${isLP ? 'Farms' : 'Pools'}`,
+                    })
                 })
             )
             .catch((e) => {
+                if(onDismiss) onDismiss();
                 // setAttemptingTxn(false)
                 // we only care if the error is something _other_ than the user rejected the tx
                 if (e?.code !== 4001) {
                     console.error(e)
                 }
             })
-    }, [pid,account,library,chainId,referrer])
+    }, [pid,account,library,chainId,referrer, isLP,tokenName, addTransaction])
 
 
     const depositTitle = balances[0] ? `Deposit ${balances[0].currency.name}` : '...'
     const withdrawTitle = balances[0] ? `Withdraw ${balances[0].currency.name}` : '...'
     const [onPresentStake] = useModal(<DepositModal title={depositTitle} balance={balances[0] || undefined} onAdd={onAdd} depositFeePercent={depositFeePercent}/>)
     const [onPresentUnStake] = useModal(<DepositModal title={withdrawTitle} balance={staked || undefined} onAdd={onWithdraw}/>)
-    const onHarvestClick = useCallback(() => { onAdd(0) }, [onAdd])
+    const onHarvestClick = useCallback(() => { onAdd(new TokenAmount(tokenA, BigInt(0))) }, [onAdd,tokenA])
 
     if(isStaked && staked.equalTo(BigInt(0))) return null;
 

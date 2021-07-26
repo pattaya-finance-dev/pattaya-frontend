@@ -10,6 +10,7 @@ import CardItem from "../../components/CardItem";
 
 import farmsList from "../../constants/farms/pattaya_farms.json"
 import {decrypt} from "../../utils/cryptography";
+import TransactionConfirmationModal, {ConfirmationModalContent} from "../../components/TransactionConfirmationModal";
 
 
 const HeaderWrapper = styled.div`
