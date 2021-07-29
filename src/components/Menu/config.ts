@@ -3,13 +3,13 @@ import { MenuEntry } from '@pattayaswap-dev-libs/uikit'
 const config: MenuEntry[] = [
   {
     label: 'Home',
+    initialOpenState: true,
     icon: 'HomeIcon',
-    href: 'https://pantherswap.com/',
+    href: '/',
   },
   {
     label: 'Trade',
     icon: 'TradeIcon',
-    initialOpenState: true,
     items: [
       {
         label: 'Exchange',

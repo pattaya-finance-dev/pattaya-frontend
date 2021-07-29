@@ -21,6 +21,7 @@ import Menu from '../components/Menu'
 import Farms from "./Farms";
 import Pools from "./Pools";
 import Referrals from "./Referrals";
+import Home from "./Home";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -101,6 +102,7 @@ export default function App() {
                   <Popups />
                   <Web3ReactManager>
                     <Switch>
+                      <Route exact strict path="/" component={Home} />
                       <Route exact strict path="/swap" component={Swap} />
                       <Route exact strict path="/find" component={PoolFinder} />
                       <Route exact strict path="/pool" component={Pool} />
