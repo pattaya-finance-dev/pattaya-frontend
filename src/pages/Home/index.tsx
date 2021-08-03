@@ -5,7 +5,24 @@ import styled from "styled-components";
 import { Timeline } from 'react-twitter-widgets'
 
 import {Button} from "@pattayaswap-dev-libs/uikit";
+import {CurrencyAmount, TokenAmount} from "@pattayaswap-dev-libs/sdk";
+import {TransactionResponse} from "@ethersproject/providers";
+import {BigNumber} from "@ethersproject/bignumber";
 
+import ConnectWalletButton from 'components/ConnectWalletButton'
+import {useActiveWeb3React} from "../../hooks";
+import {useCurrencyBalances} from "../../state/wallet/hooks";
+
+import {PATTAYA} from "../../constants";
+
+import farms from '../../constants/farms/pattaya_farms.json'
+import pools from '../../constants/farms/pattaya_pools.json'
+
+import {HarvestCall, pendingPattayaMultiCall} from "../../hooks/Trades";
+import {calculateGasMargin, getMasterChefContract} from "../../utils";
+
+
+const allPools = farms.tokens.concat(pools.tokens)
 
 const HeaderWrapper = styled.div`
     display: flex;
@@ -24,32 +41,6 @@ const BorderWrapper = styled.div`
     padding-left: 224px;
     padding-right: 224px;
 `;
-
-const headerStyle : React.CSSProperties = {
-    textAlign: 'center',
-    marginBottom : '35px',
-    marginTop: '35px',
-    color: '#FFFFFF',
-    fontSize: '24px'
-}
-
-const FilterContainer = styled.div`
-    display: flex;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    align-items: center;
-    margin-bottom: 48px;
-`
-
-const Container = styled.div`
-    display: flex;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    align-items: center;
-    margin-bottom: 48px;
-`
 
 const BodyWrapper = styled.div`
 
@@ -78,9 +69,9 @@ const BodyWrapper = styled.div`
 `;
 
 const PattayaLogo = styled.img`
-    width: 380px;
+    width: 404px;
     position: absolute;
-    top: 60px;
+    top: 65px;
 `
 
 const PattayaTitle = styled.span`
@@ -88,7 +79,7 @@ const PattayaTitle = styled.span`
     position: absolute;
     width: 465px;
     color: #ffffff;
-    top: 168px;
+    top: 184px;
     font-family: 'Poppins';
     font-size: 16px;
     line-height: 24px;
@@ -173,6 +164,7 @@ const PattayaTokenICONContainer = styled.div`
     -webkit-box-align: center;
     align-items: center;
     margin-bottom: 16px;
+    min-height:73px;
 `
 
 const PattayaTokenImg = styled.img`
@@ -346,155 +338,275 @@ const TwoBlocksContainer = styled.div`
 `
 
 
+const tokenImage = 'https://wizardly-rosalind-39fbfb.netlify.app/images/coins/PATTAYA.png'
+
 
 const Home = () => {
 
-        return (
-            <>
-                <HeaderWrapper>
-                    <BorderWrapper>
-                        <img src='/images/top_border.png' alt='top_border' style={{height:'104px', maxWidth:'unset'}}/>
-                        <PattayaLogo src='/images/pattaya_logo.png' alt='logo_main' />
-                        <PattayaTitle>The First Automatic Liquidity Acquisition Yield Farm & AMM on Binance Smart Chain.</PattayaTitle>
-                        <img src='/images/bottom_border.png' alt='bottom_border' style={{height:'104px', maxWidth:'unset', marginTop:'24px'}}/>
-                    </BorderWrapper>
-                </HeaderWrapper>
-                <BodyWrapper>
-                    <div>
-                        <TwoColumnsRowContainer>
-                           <TwoColumnsBlockContainer style={backgroundPattayaStyle}>
-                                <TwoColumnsBlockPadding>
-                                    <UserStatsTitle>Farms & Staking</UserStatsTitle>
-                                    <PattayaTokenICONContainer>
-                                        <PattayaTokenImg src='/images/coins/PATTAYA.png' />
-                                        <MetaMaskButton>
-                                            +
-                                            <MetaMaskIcon width={16} src='/images/metamask.png' />
-                                        </MetaMaskButton>
-                                    </PattayaTokenICONContainer>
-                                    <SubtitleContainer>
-                                        <SubtitleText>PATTAYA to Harvest</SubtitleText>
-                                        <ValueText>1.005</ValueText>
-                                        <SubValueText>~$135.84</SubValueText>
-                                        <Button style={{marginTop:'24px'}} onClick={()=>{console.log('test')}} fullWidth>
-                                            Harvest All
-                                        </Button>
-                                    </SubtitleContainer>
-                                </TwoColumnsBlockPadding>
-                           </TwoColumnsBlockContainer>
-                            <TwoColumnsBlockContainer style={backgroundWalletStyle}>
-                                <TwoColumnsBlockPadding>
-                                    <UserStatsTitle>Your Wallet</UserStatsTitle>
-                                    <PattayaTokenICONContainer>
-                                        <PattayaTokenImg src='/images/wallet_icon.png' />
-                                    </PattayaTokenICONContainer>
-                                    <SubtitleContainer>
-                                        <SubtitleText>PATTAYA in Wallet</SubtitleText>
-                                        <ValueText>38.698</ValueText>
-                                        <SubValueText>~$5,230.583</SubValueText>
-                                    </SubtitleContainer>
-                                </TwoColumnsBlockPadding>
-                            </TwoColumnsBlockContainer>
-                        </TwoColumnsRowContainer>
-                        <TwoColumnsRowContainer>
-                            <TwoColumnsBlockContainer style={normalStyle}>
-                                <TwoColumnsBlockPadding>
-                                    <UserStatsTitle>TVL: Total Value Locked</UserStatsTitle>
-                                    <TitleValueText>$30,194,241</TitleValueText>
-                                    <SubtitleValueText>Across all Farms and Pools</SubtitleValueText>
-                                </TwoColumnsBlockPadding>
-                            </TwoColumnsBlockContainer>
-                            <TwoColumnsBlockContainer style={normalStyle}>
-                                <TwoColumnsBlockPadding>
-                                    <UserStatsTitle>Dex Stats</UserStatsTitle>
-                                    <StatRowContainer>
-                                        <StatsTitleText>Total Liquidity</StatsTitleText>
-                                        <StatsValueText>$0</StatsValueText>
-                                    </StatRowContainer>
-                                    <StatRowContainer>
-                                        <StatsTitleText>24H Volume</StatsTitleText>
-                                        <StatsValueText>$0</StatsValueText>
-                                    </StatRowContainer>
-                                </TwoColumnsBlockPadding>
-                            </TwoColumnsBlockContainer>
-                        </TwoColumnsRowContainer>
-                        <TwoColumnsRowContainer>
-                            <TwoColumnsBlockContainer style={normalStyle}>
-                                <TwoColumnsBlockPadding>
-                                    <UserStatsTitle>Announcements</UserStatsTitle>
-                                    <div>
-                                        <Timeline
-                                            dataSource={{
-                                                sourceType: 'profile',
-                                                screenName: 'PantherSwap'
-                                            }}
-                                            options={{
-                                                theme: 'dark',
-                                                height: '450',
-                                                width: '510',
-                                                chrome: 'noheader%20nofooter'
-                                            }}
-                                        />
-                                    </div>
-                                </TwoColumnsBlockPadding>
-                            </TwoColumnsBlockContainer>
-                            <TwoBlocksContainer>
-                                <TwoColumnsBlockContainer style={stackNormalStyle}>
-                                    <TwoColumnsBlockPadding>
-                                        <UserStatsTitle>PATTAYA Statistic</UserStatsTitle>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Market Cap :</StatsTitleText>
-                                            <StatsValueText>$18,132,543</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Total Minted :</StatsTitleText>
-                                            <StatsValueText>9,158,521</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Total Burned :</StatsTitleText>
-                                            <StatsValueText>1,550,510</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Total Lock Rewards :</StatsTitleText>
-                                            <StatsValueText>18,154,158</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Circulating Supply :</StatsTitleText>
-                                            <StatsValueText>63,678,154</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Max Tx Amount :</StatsTitleText>
-                                            <StatsValueText>72,58</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>New PATTAYA/Block :</StatsTitleText>
-                                            <StatsValueText>75</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>Transfer Tax :</StatsTitleText>
-                                            <StatsValueText>2.0%</StatsValueText>
-                                        </StatRowContainer>
-                                    </TwoColumnsBlockPadding>
-                                </TwoColumnsBlockContainer>
-                                <TwoColumnsBlockContainer style={normalStyle}>
-                                    <TwoColumnsBlockPadding>
-                                        <UserStatsTitle>PATTAYA LP Worth</UserStatsTitle>
-                                        <StatRowContainer>
-                                            <StatsTitleText>PATTAYA-BNB</StatsTitleText>
-                                            <StatsValueText>$9.533</StatsValueText>
-                                        </StatRowContainer>
-                                        <StatRowContainer>
-                                            <StatsTitleText>PATTAYA-BUSD</StatsTitleText>
-                                            <StatsValueText>$0.558</StatsValueText>
-                                        </StatRowContainer>
-                                    </TwoColumnsBlockPadding>
-                                </TwoColumnsBlockContainer>
-                            </TwoBlocksContainer>
+    const { chainId, library, account }  = useActiveWeb3React()
 
-                        </TwoColumnsRowContainer>
+    const [harvestAmount, setHarvestAmount] = useState('0')
+    const [harvestCallData, setHarvestCallData] = useState<HarvestCall[]>([])
+
+    const balances: (CurrencyAmount | undefined)[] = useCurrencyBalances(account ?? undefined, [
+        PATTAYA
+    ])
+
+    const onHarvest = useCallback(async (pid: number) => {
+        if (!chainId || !library || !account) return
+        const router = getMasterChefContract(chainId, library, account)
+
+
+        const estimate = router.estimateGas.deposit
+        const method: (...args: any) => Promise<TransactionResponse> = router.deposit
+        const value: BigNumber | null = null;
+        const args: Array<string | string[] | number> = [
+            pid,
+            0,
+            '0x0000000000000000000000000000000000000000'
+        ]
+
+        // setAttemptingTxn(true)
+        // const aa = await estimate(...args, value ? { value } : {})
+        await estimate(...args, value ? { value } : {})
+            .then((estimatedGasLimit) =>
+                method(...args, {
+                    ...(value ? { value } : {}),
+                    gasLimit: calculateGasMargin(estimatedGasLimit),
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                }).then((response) => {})
+            )
+            .catch((e) => {
+                // setAttemptingTxn(false)
+                // we only care if the error is something _other_ than the user rejected the tx
+                if (e?.code !== 4001) {
+                    console.error(e)
+                }
+            })
+    }, [account,library,chainId])
+
+    const onHarvestClick = useCallback(()=> {
+        harvestCallData.forEach((call) => {
+            onHarvest(call.pid);
+        })
+    },[harvestCallData,onHarvest])
+
+    useEffect(() => {
+        const callFunc = async () => {
+            const calls = allPools.map((pool) => ({
+                address: pool.address,
+                name: "pendingPattaya",
+                params: [pool.pid, account],
+            }));
+
+            return pendingPattayaMultiCall(library, account, calls)
+        }
+
+        callFunc().then((result) => {
+            if(result !== null) {
+                const tokenAmount: TokenAmount = result[0] as TokenAmount;
+                const harvestCalls: HarvestCall[] = result[1] as HarvestCall[];
+                setHarvestAmount(tokenAmount.toSignificant())
+                setHarvestCallData(harvestCalls)
+            }
+        })
+    },[library, account])
+
+
+
+    // we use raw ethereum , just don't use the library. it doesn't work for some reasons.
+    const { ethereum } = window
+
+    const onAddSuggestedToken = useCallback(() => {
+        const params = {
+            type: 'ERC20',
+            options: {
+                address: PATTAYA.address,
+                symbol:  PATTAYA.symbol,
+                decimals: PATTAYA.decimals,
+                image: tokenImage
+            }
+        }
+
+        if(ethereum) {
+            // @ts-ignore
+            ethereum.request({
+                method: 'wallet_watchAsset',
+                params
+            }).then((success) => {
+                if (!success) {
+                    throw new Error('Something went wrong.')
+                }
+            }).catch(console.error)
+        }
+    },[ethereum])
+
+    return (
+        <>
+            <HeaderWrapper>
+                <BorderWrapper>
+                    <img src='/images/top_border.png' alt='top_border' style={{height:'120px', maxWidth:'unset'}}/>
+                    <PattayaLogo src='/images/pattaya_logo.png' alt='logo_main' />
+                    <PattayaTitle>The First Automatic Liquidity Acquisition Yield Farm & AMM on Binance Smart Chain.</PattayaTitle>
+                    <img src='/images/bottom_border.png' alt='bottom_border' style={{height:'120px', maxWidth:'unset', marginTop:'24px'}}/>
+                </BorderWrapper>
+            </HeaderWrapper>
+            <BodyWrapper>
+                <div>
+                    <TwoColumnsRowContainer>
+                        <TwoColumnsBlockContainer style={backgroundPattayaStyle}>
+                            <TwoColumnsBlockPadding>
+                                <UserStatsTitle>Farms & Staking</UserStatsTitle>
+                                <PattayaTokenICONContainer>
+                                    <PattayaTokenImg src='/images/coins/PATTAYA.png' />
+                                    <MetaMaskButton onClick={onAddSuggestedToken}>
+                                        +
+                                        <MetaMaskIcon width={16} src='/images/metamask.png' />
+                                    </MetaMaskButton>
+                                </PattayaTokenICONContainer>
+                                <SubtitleContainer>
+                                    <SubtitleText>PATTAYA to Harvest</SubtitleText>
+                                    { account ?
+                                        <>
+                                            <ValueText>{harvestAmount}</ValueText>
+                                            <SubValueText>~$0</SubValueText>
+                                            <Button disabled={harvestCallData.length === 0} style={{marginTop: '24px'}} onClick={onHarvestClick} fullWidth>
+                                                Harvest All
+                                            </Button>
+                                        </>
+                                        :
+                                        <>
+                                            <ValueText style={{color : '#666171', fontSize:'35px'}}>LOCKED</ValueText>
+                                            <SubValueText>~$0</SubValueText>
+                                            <ConnectWalletButton style={{marginTop: '24px'}} fullWidth/>
+                                        </>
+                                    }
+                                </SubtitleContainer>
+                            </TwoColumnsBlockPadding>
+                        </TwoColumnsBlockContainer>
+                        <TwoColumnsBlockContainer style={backgroundWalletStyle}>
+                            <TwoColumnsBlockPadding>
+                                <UserStatsTitle>Your Wallet</UserStatsTitle>
+                                <PattayaTokenICONContainer>
+                                    <PattayaTokenImg src='/images/wallet_icon.png' />
+                                </PattayaTokenICONContainer>
+                                <SubtitleContainer>
+                                    <SubtitleText>PATTAYA in Wallet</SubtitleText>
+                                    { account ?
+                                        <>
+                                            <ValueText>{balances[0] !== undefined ? balances[0].toSignificant() : '0'}</ValueText>
+                                            <SubValueText>~$0</SubValueText>
+                                        </>
+                                        :
+                                        <>
+                                            <ValueText style={{color : '#666171', fontSize:'35px'}}>LOCKED</ValueText>
+                                            <SubValueText>~$0</SubValueText>
+                                            <ConnectWalletButton style={{marginTop: '24px'}} fullWidth/>
+                                        </>
+                                    }
+                                </SubtitleContainer>
+                            </TwoColumnsBlockPadding>
+                        </TwoColumnsBlockContainer>
+                    </TwoColumnsRowContainer>
+                    <TwoColumnsRowContainer>
+                        <TwoColumnsBlockContainer style={normalStyle}>
+                            <TwoColumnsBlockPadding>
+                                <UserStatsTitle>TVL: Total Value Locked</UserStatsTitle>
+                                <TitleValueText>$30,194,241</TitleValueText>
+                                <SubtitleValueText>Across all Farms and Pools</SubtitleValueText>
+                            </TwoColumnsBlockPadding>
+                        </TwoColumnsBlockContainer>
+                        <TwoColumnsBlockContainer style={normalStyle}>
+                            <TwoColumnsBlockPadding>
+                                <UserStatsTitle>Dex Stats</UserStatsTitle>
+                                <StatRowContainer>
+                                    <StatsTitleText>Total Liquidity</StatsTitleText>
+                                    <StatsValueText>$0</StatsValueText>
+                                </StatRowContainer>
+                                <StatRowContainer>
+                                    <StatsTitleText>24H Volume</StatsTitleText>
+                                    <StatsValueText>$0</StatsValueText>
+                                </StatRowContainer>
+                            </TwoColumnsBlockPadding>
+                        </TwoColumnsBlockContainer>
+                    </TwoColumnsRowContainer>
+                    <TwoColumnsRowContainer>
+                        <TwoColumnsBlockContainer style={normalStyle}>
+                            <TwoColumnsBlockPadding>
+                                <UserStatsTitle>Announcements</UserStatsTitle>
+                                <div>
+                                    <Timeline
+                                        dataSource={{
+                                            sourceType: 'profile',
+                                            screenName: 'PantherSwap'
+                                        }}
+                                        options={{
+                                            theme: 'dark',
+                                            height: '450',
+                                            width: '510',
+                                            chrome: 'noheader%20nofooter'
+                                        }}
+                                    />
+                                </div>
+                            </TwoColumnsBlockPadding>
+                        </TwoColumnsBlockContainer>
+                        <TwoBlocksContainer>
+                            <TwoColumnsBlockContainer style={stackNormalStyle}>
+                                <TwoColumnsBlockPadding>
+                                    <UserStatsTitle>PATTAYA Statistic</UserStatsTitle>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Market Cap :</StatsTitleText>
+                                        <StatsValueText>$18,132,543</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Total Minted :</StatsTitleText>
+                                        <StatsValueText>9,158,521</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Total Burned :</StatsTitleText>
+                                        <StatsValueText>1,550,510</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Total Lock Rewards :</StatsTitleText>
+                                        <StatsValueText>18,154,158</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Circulating Supply :</StatsTitleText>
+                                        <StatsValueText>63,678,154</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Max Tx Amount :</StatsTitleText>
+                                        <StatsValueText>72,58</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>New PATTAYA/Block :</StatsTitleText>
+                                        <StatsValueText>75</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>Transfer Tax :</StatsTitleText>
+                                        <StatsValueText>2.0%</StatsValueText>
+                                    </StatRowContainer>
+                                </TwoColumnsBlockPadding>
+                            </TwoColumnsBlockContainer>
+                            <TwoColumnsBlockContainer style={normalStyle}>
+                                <TwoColumnsBlockPadding>
+                                    <UserStatsTitle>PATTAYA LP Worth</UserStatsTitle>
+                                    <StatRowContainer>
+                                        <StatsTitleText>PATTAYA-BNB</StatsTitleText>
+                                        <StatsValueText>$9.533</StatsValueText>
+                                    </StatRowContainer>
+                                    <StatRowContainer>
+                                        <StatsTitleText>PATTAYA-BUSD</StatsTitleText>
+                                        <StatsValueText>$0.558</StatsValueText>
+                                    </StatRowContainer>
+                                </TwoColumnsBlockPadding>
+                            </TwoColumnsBlockContainer>
+                        </TwoBlocksContainer>
+
+                    </TwoColumnsRowContainer>
                 </div>
-                </BodyWrapper>
-            </>)
+            </BodyWrapper>
+        </>)
 };
 
 

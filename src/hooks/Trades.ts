@@ -1,12 +1,58 @@
-import { Currency, CurrencyAmount, Pair, Token, Trade } from '@pattayaswap-dev-libs/sdk'
+import {Currency, CurrencyAmount, Pair, Token, TokenAmount, Trade} from '@pattayaswap-dev-libs/sdk'
 import flatMap from 'lodash.flatmap'
 import { useMemo } from 'react'
 
-import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
+import {BigNumber} from "ethers";
+
+import {BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES, PATTAYA} from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useActiveWeb3React } from './index'
+import {getMasterChefContract } from "../utils";
+
+export interface Call {
+    address: string; // Address of the contract
+    name: string; // Function name on the contract (example: balanceOf)
+    params: any[]; // Function params
+}
+
+export interface HarvestCall {
+    pid: number;
+    amount: TokenAmount;
+}
+
+export async function pendingPattayaMultiCall(library,account, calls: Call[]) {
+
+
+    if(library !== undefined && account !== undefined) {
+        const contract = getMasterChefContract(0, library, account ?? undefined);
+        let pending =  BigNumber.from(0)
+        const tokenAddressToHarvest: HarvestCall[] = [];
+        for(let i = 0 ; i < calls.length ; i++) {
+            const pid = calls[i].params[0];
+            const address = calls[i].params[1];
+
+            const canHarvest:boolean = await contract.canHarvest(pid,account);
+            if(canHarvest) {
+                const result: BigNumber = await contract.pendingPattaya(pid, address);
+                if (result.gt(BigNumber.from(0))) {
+                    pending = pending.add(result)
+                    tokenAddressToHarvest.push({
+                        pid,
+                        amount: new TokenAmount(PATTAYA, BigInt(result))
+                    })
+                }
+            }
+        }
+
+        return [new TokenAmount(PATTAYA, BigInt(pending)), tokenAddressToHarvest]
+    }
+
+    return null;
+}
+
+
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const { chainId } = useActiveWeb3React()
