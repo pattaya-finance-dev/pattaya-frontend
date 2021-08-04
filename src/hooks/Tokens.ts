@@ -1,14 +1,17 @@
 import { parseBytes32String } from '@ethersproject/strings'
 import { Currency, ETHER, Token, currencyEquals } from '@pattayaswap-dev-libs/sdk'
+import {BigNumber} from "@ethersproject/bignumber";
+
 import { useMemo } from 'react'
 import {useSelectedTokenList, useTokenList} from '../state/lists/hooks'
-import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
+import {NEVER_RELOAD, Result, useSingleCallResult} from '../state/multicall/hooks'
 // eslint-disable-next-line import/no-cycle
 import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
 
 import { useActiveWeb3React } from './index'
-import { useBytes32TokenContract, useTokenContract } from './useContract'
+import {useBytes32TokenContract, useMasterChefContract, usePattayaTokenContract, useTokenContract} from './useContract'
+import {DEAD_ADDRESS} from "../constants";
 
 export function useAllTokens(): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React()
@@ -181,4 +184,43 @@ export function useCurrency(currencyId: string | undefined): Currency | null | u
   const isETH = currencyId?.toUpperCase() === 'ETH'
   const token = useToken(isETH ? undefined : currencyId)
   return isETH ? ETHER : token
+}
+
+export function useTransferTaxRate(tokenAddress?: string): [undefined,undefined,undefined,undefined, undefined] | [BigNumber, number, number, number, number] {
+  const { chainId } = useActiveWeb3React()
+  const address = isAddress(tokenAddress)
+
+  const tokenContract = usePattayaTokenContract(address || undefined, false)
+  const masterChefContract = useMasterChefContract(false)
+
+  const transferTaxRate = useSingleCallResult(tokenContract, 'transferTaxRate', undefined, NEVER_RELOAD)
+  const totalSupply = useSingleCallResult(tokenContract, 'totalSupply', undefined, NEVER_RELOAD)
+  const totalBurn = useSingleCallResult(tokenContract, 'balanceOf', [DEAD_ADDRESS], NEVER_RELOAD)
+  const totalLockedUpRewards = useSingleCallResult(masterChefContract, 'totalLockedUpRewards', undefined, NEVER_RELOAD)
+
+
+  return useMemo(() => {
+    if (!chainId || !address) return [undefined, undefined, undefined, undefined, undefined]
+    if (transferTaxRate.loading || totalSupply.loading || totalBurn.loading) return [undefined, undefined, undefined, undefined, undefined]
+    if (transferTaxRate.result) {
+      const mint = totalSupply.result?.[0]/10**18;
+      const burn = totalBurn.result?.[0]/10**18;
+      const lockedUp = totalLockedUpRewards.result?.[0]/10**18;
+      const circulating = mint - burn - lockedUp
+      return [BigNumber.from(transferTaxRate.result?.[0]),
+              mint,
+              burn,
+              lockedUp,
+              circulating
+              ];
+    }
+    return [ undefined, undefined , undefined, undefined, undefined]
+  }, [
+    address,
+    chainId,
+    transferTaxRate,
+    totalSupply,
+    totalBurn,
+    totalLockedUpRewards
+  ])
 }

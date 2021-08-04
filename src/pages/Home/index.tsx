@@ -18,8 +18,9 @@ import {PATTAYA} from "../../constants";
 import farms from '../../constants/farms/pattaya_farms.json'
 import pools from '../../constants/farms/pattaya_pools.json'
 
-import {HarvestCall, pendingPattayaMultiCall} from "../../hooks/Trades";
+import {getEmissionRate, HarvestCall, pendingPattayaMultiCall} from "../../hooks/Trades";
 import {calculateGasMargin, getMasterChefContract} from "../../utils";
+import {useTransferTaxRate} from "../../hooks/Tokens";
 
 
 const allPools = farms.tokens.concat(pools.tokens)
@@ -346,11 +347,14 @@ const Home = () => {
     const { chainId, library, account }  = useActiveWeb3React()
 
     const [harvestAmount, setHarvestAmount] = useState('0')
+    const [emissionRate, setEmissionRate] = useState('0')
     const [harvestCallData, setHarvestCallData] = useState<HarvestCall[]>([])
 
     const balances: (CurrencyAmount | undefined)[] = useCurrencyBalances(account ?? undefined, [
         PATTAYA
     ])
+
+    const [taxRate, totalSupply, totalBurn, totalLockedUpRewards, totalCirculatingSupply] = useTransferTaxRate(PATTAYA.address)
 
     const onHarvest = useCallback(async (pid: number) => {
         if (!chainId || !library || !account) return
@@ -401,6 +405,15 @@ const Home = () => {
 
             return pendingPattayaMultiCall(library, account, calls)
         }
+
+        const callEmission = async () => {
+            return getEmissionRate(library)
+        }
+
+        callEmission().then((result) => {
+            // console.log(result);
+            setEmissionRate(result.toString())
+        })
 
         callFunc().then((result) => {
             if(result !== null) {
@@ -512,7 +525,7 @@ const Home = () => {
                         <TwoColumnsBlockContainer style={normalStyle}>
                             <TwoColumnsBlockPadding>
                                 <UserStatsTitle>TVL: Total Value Locked</UserStatsTitle>
-                                <TitleValueText>$30,194,241</TitleValueText>
+                                <TitleValueText>N/A</TitleValueText>
                                 <SubtitleValueText>Across all Farms and Pools</SubtitleValueText>
                             </TwoColumnsBlockPadding>
                         </TwoColumnsBlockContainer>
@@ -521,11 +534,11 @@ const Home = () => {
                                 <UserStatsTitle>Dex Stats</UserStatsTitle>
                                 <StatRowContainer>
                                     <StatsTitleText>Total Liquidity</StatsTitleText>
-                                    <StatsValueText>$0</StatsValueText>
+                                    <StatsValueText>N/A</StatsValueText>
                                 </StatRowContainer>
                                 <StatRowContainer>
                                     <StatsTitleText>24H Volume</StatsTitleText>
-                                    <StatsValueText>$0</StatsValueText>
+                                    <StatsValueText>N/A</StatsValueText>
                                 </StatRowContainer>
                             </TwoColumnsBlockPadding>
                         </TwoColumnsBlockContainer>
@@ -544,7 +557,7 @@ const Home = () => {
                                             theme: 'dark',
                                             height: '450',
                                             width: '510',
-                                            chrome: 'noheader%20nofooter'
+                                            chrome: 'noheader%20nofooter%20noscrollbar'
                                         }}
                                     />
                                 </div>
@@ -556,35 +569,35 @@ const Home = () => {
                                     <UserStatsTitle>PATTAYA Statistic</UserStatsTitle>
                                     <StatRowContainer>
                                         <StatsTitleText>Market Cap :</StatsTitleText>
-                                        <StatsValueText>$18,132,543</StatsValueText>
+                                        <StatsValueText>N/A</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Total Minted :</StatsTitleText>
-                                        <StatsValueText>9,158,521</StatsValueText>
+                                        <StatsValueText>{totalSupply?.toLocaleString('en-US',{maximumFractionDigits:0}) ?? 'N/A'}</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Total Burned :</StatsTitleText>
-                                        <StatsValueText>1,550,510</StatsValueText>
+                                        <StatsValueText>{totalBurn?.toLocaleString('en-US',{maximumFractionDigits:0}) ?? 'N/A'}</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Total Lock Rewards :</StatsTitleText>
-                                        <StatsValueText>18,154,158</StatsValueText>
+                                        <StatsValueText>{totalLockedUpRewards?.toLocaleString('en-US',{maximumFractionDigits:0}) ?? 'N/A'}</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Circulating Supply :</StatsTitleText>
-                                        <StatsValueText>63,678,154</StatsValueText>
+                                        <StatsValueText>{totalCirculatingSupply?.toLocaleString('en-US',{maximumFractionDigits:0}) ?? 'N/A'}</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Max Tx Amount :</StatsTitleText>
-                                        <StatsValueText>72,58</StatsValueText>
+                                        <StatsValueText>N/A</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>New PATTAYA/Block :</StatsTitleText>
-                                        <StatsValueText>75</StatsValueText>
+                                        <StatsValueText>{emissionRate}</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>Transfer Tax :</StatsTitleText>
-                                        <StatsValueText>2.0%</StatsValueText>
+                                        <StatsValueText>{taxRate ? `${(taxRate?.toNumber() / 100)}%` : 'N/A'}</StatsValueText>
                                     </StatRowContainer>
                                 </TwoColumnsBlockPadding>
                             </TwoColumnsBlockContainer>
@@ -593,11 +606,11 @@ const Home = () => {
                                     <UserStatsTitle>PATTAYA LP Worth</UserStatsTitle>
                                     <StatRowContainer>
                                         <StatsTitleText>PATTAYA-BNB</StatsTitleText>
-                                        <StatsValueText>$9.533</StatsValueText>
+                                        <StatsValueText>N/A</StatsValueText>
                                     </StatRowContainer>
                                     <StatRowContainer>
                                         <StatsTitleText>PATTAYA-BUSD</StatsTitleText>
-                                        <StatsValueText>$0.558</StatsValueText>
+                                        <StatsValueText>N/A</StatsValueText>
                                     </StatRowContainer>
                                 </TwoColumnsBlockPadding>
                             </TwoColumnsBlockContainer>

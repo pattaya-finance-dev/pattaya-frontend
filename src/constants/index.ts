@@ -4,6 +4,8 @@ export const ROUTER_ADDRESS = '0xBD351b7073a6B5bbbEaC57b51ba836Cbc9372A76'
 export const MASTER_CHEF_ADDRESS = '0x60577D078713EADe6360e7ba7014321a63370B74'
 export const REFERRAL_ADDRESS = '0xFACa819cab93638087aC490698f5797Ac393fE42'
 
+export const DEAD_ADDRESS = '0x000000000000000000000000000000000000dead'
+
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]

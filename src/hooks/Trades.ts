@@ -9,7 +9,8 @@ import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useActiveWeb3React } from './index'
-import {getMasterChefContract } from "../utils";
+import { getMasterChefContract  } from "../utils";
+
 
 export interface Call {
     address: string; // Address of the contract
@@ -20,6 +21,16 @@ export interface Call {
 export interface HarvestCall {
     pid: number;
     amount: TokenAmount;
+}
+
+export async function getEmissionRate(library){
+    if(library !== undefined) {
+        const contract = getMasterChefContract(0, library, undefined);
+        const emission:BigNumber = await contract.pattayaPerBlock();
+        return parseFloat(emission.toString()) / (10**18)
+    }
+
+    return 0;
 }
 
 export async function pendingPattayaMultiCall(library,account, calls: Call[]) {
