@@ -10,7 +10,13 @@ import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
 
 import { useActiveWeb3React } from './index'
-import {useBytes32TokenContract, useMasterChefContract, usePattayaTokenContract, useTokenContract} from './useContract'
+import {
+  useBytes32TokenContract,
+  useMasterChefContract,
+  usePairContract,
+  usePattayaTokenContract,
+  useTokenContract
+} from './useContract'
 import {DEAD_ADDRESS} from "../constants";
 
 export function useAllTokens(): { [address: string]: Token } {
@@ -73,6 +79,20 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
     : bytes32 && BYTES32_REGEX.test(bytes32)
     ? parseBytes32String(bytes32)
     : defaultValue
+}
+
+export function useLPPairAddress(address?: string): [string, string] | [null,null] {
+
+  const pairContract = usePairContract(address || undefined, false)
+  const token0Address = useSingleCallResult(pairContract, 'token0', undefined, NEVER_RELOAD)
+  const token1Address = useSingleCallResult(pairContract, 'token1', undefined, NEVER_RELOAD)
+
+
+  return useMemo(() => {
+    if (token0Address.loading || token1Address.loading) return [null,null]
+    return [token0Address.result?.[0],token1Address.result?.[0]]
+  },[token1Address, token0Address])
+
 }
 
 export function useLPToken(tokenAddress?: string): Token | undefined | null {

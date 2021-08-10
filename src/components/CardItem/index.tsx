@@ -20,7 +20,7 @@ import LinkICON from "../Icons/LinkIcon";
 import {useActiveWeb3React} from "../../hooks";
 import {RowBetween} from "../Row";
 import {MASTER_CHEF_ADDRESS} from "../../constants";
-import {useLPToken } from "../../hooks/Tokens";
+import {useLPPairAddress, useLPToken} from "../../hooks/Tokens";
 import {useCurrencyBalances} from "../../state/wallet/hooks";
 import DepositModal from "./DepositModal";
 import {calculateGasMargin, getMasterChefContract } from "../../utils";
@@ -429,6 +429,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
     const addTransaction = useTransactionAdder()
 
     const tokenA : Token = useLPToken(tokenAddress) as Token;
+    const [token0Address, token1Address] = useLPPairAddress(tokenAddress)
 
     const approveAmount: TokenAmount = new TokenAmount(tokenA, BigInt(BigNumber.from(50).mul(10).pow(18)))
 
@@ -550,8 +551,8 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
 
     return  (
         <>
-            <CardItemContainer>
-                { isHot === true ? <CardAura/> : null }
+            <CardItemContainer style={ depositFee === null ? { filter : 'blur(5px)'} : {} }>
+                { depositFee !== null && isHot === true ? <CardAura/> : null }
                 <ContentHeader>
                     <HeaderICON style={!isLP ? {maxWidth : '64px'} : {}}>
                         <HeaderImg src={imageUrl} alt="PATTAYA" />
@@ -698,10 +699,14 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
                     <div style={{marginTop:'24px'}} />
                     <ContentRow>
                         <ContentField>Deposit:</ContentField>
-                        <ContentLink href="/add">
-                            {tokenName}
-                            <LinkICON/>
-                        </ContentLink>
+                        { isLP ?
+                            <ContentLink href={`/add/${token0Address}/${token1Address}`}>
+                                {tokenName}
+                                <LinkICON/>
+                            </ContentLink>
+                            :
+                            <ContentField>{tokenName}</ContentField>
+                        }
                     </ContentRow>
                     <ContentRow>
                         <ContentField>Total Liquidity:</ContentField>
