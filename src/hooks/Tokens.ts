@@ -4,7 +4,9 @@ import {BigNumber} from "@ethersproject/bignumber";
 
 import { useMemo } from 'react'
 import {useSelectedTokenList, useTokenList} from '../state/lists/hooks'
-import {NEVER_RELOAD, Result, useSingleCallResult} from '../state/multicall/hooks'
+import {NEVER_RELOAD, Result, useMultipleContractSingleData, useSingleCallResult} from '../state/multicall/hooks'
+
+
 // eslint-disable-next-line import/no-cycle
 import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
@@ -18,6 +20,8 @@ import {
   useTokenContract
 } from './useContract'
 import {DEAD_ADDRESS} from "../constants";
+import MasterChef_ABI from "../constants/abis/master-chef";
+import IUniswapV2Pair_ABI from "../constants/abis/pair";
 
 export function useAllTokens(): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React()
@@ -83,15 +87,17 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
 
 export function useLPPairAddress(address?: string): [string, string] | [null,null] {
 
-  const pairContract = usePairContract(address || undefined, false)
-  const token0Address = useSingleCallResult(pairContract, 'token0', undefined, NEVER_RELOAD)
-  const token1Address = useSingleCallResult(pairContract, 'token1', undefined, NEVER_RELOAD)
+  const token0Address = useMultipleContractSingleData([address], IUniswapV2Pair_ABI, 'token0')
+  const token1Address = useMultipleContractSingleData([address], IUniswapV2Pair_ABI, 'token1')
 
+  const { result: data0, loading : loading0 } = token0Address[0]
+  const { result: data1, loading : loading1 } = token1Address[0]
 
   return useMemo(() => {
-    if (token0Address.loading || token1Address.loading) return [null,null]
-    return [token0Address.result?.[0],token1Address.result?.[0]]
-  },[token1Address, token0Address])
+    if (loading0 || loading1) return [null,null]
+    if (data0 === undefined || data1 === undefined) return [null, null]
+    return [data0.toString(),data1.toString()]
+  },[loading0, loading1, data1, data0])
 
 }
 

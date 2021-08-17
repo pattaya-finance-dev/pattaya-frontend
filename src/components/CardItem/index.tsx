@@ -429,7 +429,7 @@ const CardItem = ({tokenName, pid, tokenAddress, isLP, imageUrl, referrer, isSta
     const addTransaction = useTransactionAdder()
 
     const tokenA : Token = useLPToken(tokenAddress) as Token;
-    const [token0Address, token1Address] = useLPPairAddress(tokenAddress)
+    const [token0Address, token1Address] = useLPPairAddress(isLP ? tokenAddress : undefined)
 
     const approveAmount: TokenAmount = new TokenAmount(tokenA, BigInt(BigNumber.from(50).mul(10).pow(18)))
 
