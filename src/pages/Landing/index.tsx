@@ -7,6 +7,8 @@ import { Button, ButtonVariants } from "@pattayaswap-dev-libs/uikit";
 import styled from "styled-components";
 import Logo from "./Logo";
 
+import 'style/fonts.css';
+
 const Wrapper = styled.div`
     background-image: url('/images/bg_landing.png');
     background-repeat: repeat-y;
@@ -46,7 +48,7 @@ const LandingMenu = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    font-family: 'Poppins';
+    font-family: PoppinsRegular;
     width:100%;
 `
 
@@ -85,7 +87,7 @@ const HomeContent = styled.div`
     color: #ffffff;
     width: 540px;
     
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 32px;
     font-weight: 600;
 `
@@ -124,7 +126,7 @@ const TokenomicsContainer = styled.div`
     align-items:center;
     
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 32px;
     font-weight: 600;
     
@@ -151,7 +153,7 @@ const TokenomicsCard = styled.div`
     
     box-shadow: 0 0 0.2rem #fff, 0 0 0.2rem #fff, 0 0 2rem #bc13fe, 0 0 0.8rem #bc13fe, 0 0 0.8rem #bc13fe, inset 0 0 0.3rem #d136ff;
     
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 30px;
     font-weight: 600;
     
@@ -160,7 +162,7 @@ const TokenomicsCard = styled.div`
 `
 
 const TokenomicsCardDesc = styled.div`
-    font-family:inherit;
+    font-family:PoppinsMedium;
     font-size: 18px;
     font-weight: 500;
     margin-top: 36px;
@@ -175,7 +177,7 @@ const HowToBuyContainer = styled.div`
     align-items:center;
     
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 32px;
     font-weight: 600;
     
@@ -190,7 +192,7 @@ const RoadmapBuyContainer = styled.div`
     align-items:center;
     
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 32px;
     font-weight: 600;
     
@@ -205,7 +207,7 @@ const PartnersContainer = styled.div`
     align-items:center;
     
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 32px;
     font-weight: 600;
     
@@ -225,7 +227,7 @@ const PartnersRow = styled.div`
 `
 
 const RoadmapText = styled.div`
-    font-family: inherit;
+    font-family: PoppinsMedium;
     font-size: 20px;
     font-weight: 500;
     margin-top: 50px;
@@ -274,7 +276,7 @@ const RoadmapItemSmall = styled.div`
 `
 
 const RoadmapItemLine = styled.p`
-    font-family: inherit;
+    font-family: PoppinsMedium;
 `
 
 const HowToBuyCard = styled.div`
@@ -306,7 +308,7 @@ const HowToBuyRow = styled.div`
 
 const HowToStepText = styled.div`
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 90px;
     font-weight: 600;
     flex:1;
@@ -322,7 +324,7 @@ const HowToImage = styled.div`
 
 const HowToTitleText = styled.div`
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 20px;
     font-weight: 600;
     flex:1;
@@ -331,7 +333,7 @@ const HowToTitleText = styled.div`
 
 const HowToDescText = styled.div`
     color: #ffffff;
-    font-family: 'Poppins';
+    font-family: PoppinsMedium;
     font-size: 20px;
     font-weight: 500;
     flex:3;
@@ -359,7 +361,7 @@ const Footer = styled.div`
     background-color: #000118;
     width:100%;
     
-    font-family: 'Poppins';
+    font-family: PoppinsBold;
     font-size: 20px;
     font-weight: 600;
 `
@@ -402,7 +404,7 @@ const Landing = () => {
                     <MenuListItem href='#roadmap_tag'>Roadmap</MenuListItem>
                     <MenuListItem href='#partners_tag'>Partners</MenuListItem>
                 </MenuList>
-                <Button onClick={onClickLaunch} style={{fontSize:'18px'}}>Launch app</Button>
+                <Button onClick={onClickLaunch} style={{fontFamily:'PoppinsBold', fontSize:'18px'}}>Launch app</Button>
             </LandingMenu>
             <HomeContainer id='home_tag'>
                 <HomeContent>
@@ -425,7 +427,7 @@ const Landing = () => {
                         <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>About Pattaya&lsquo;s Token</div>
                         <SeparateLine/>
                     </div>
-                    <div style={{fontFamily:'inherit', marginTop:'28px'}}>
+                    <div style={{fontFamily:'PoppinsMedium', marginTop:'28px'}}>
                         <div style={{fontFamily:'inherit'}}>Pattaya’s aims at creating cryptocurrency to be used in daily life at the same time generating passive income for holders. Our roadmap will begin using in restaurants, pubs, bars in all major countries in the South-east Asia and expand to the rest of the world.</div>
                         <br/>
                         <div style={{fontFamily:'inherit'}}>With the RFI token technology, token holders are able to earn passive income by just holding the token. 3% of every transaction is distributed equally and transferred to all token holders.</div>
@@ -439,10 +441,10 @@ const Landing = () => {
                 </div>
 
                 <div style={{marginTop: '42px', fontWeight:500, fontFamily:'inherit', fontSize:'20px', lineHeight:'42px', width:'100%'}}>
-                    <p style={{fontFamily:'inherit', textAlign:'center'}}>Max Cap 100,000,000 Tokens
+                    <p style={{fontFamily:'PoppinsMedium', textAlign:'center'}}>Max Cap 100,000,000 Tokens
                     </p>
-                    <p style={{fontFamily:'inherit', textAlign:'center'}}>100,000 tokens trading limit per transaction. (0.1% of max supply)</p>
-                    <p style={{fontFamily:'inherit', textAlign:'center'}}>10% is to reserved for investors and partners (4.5% locked for 6 months after Pre-sales)</p>
+                    <p style={{fontFamily:'PoppinsMedium', textAlign:'center'}}>100,000 tokens trading limit per transaction. (0.1% of max supply)</p>
+                    <p style={{fontFamily:'PoppinsMedium', textAlign:'center'}}>10% is to reserved for investors and partners (4.5% locked for 6 months after Pre-sales)</p>
                 </div>
 
                 <TokenomicsCardContainer>
@@ -601,7 +603,7 @@ const Landing = () => {
         <Footer>
             <div style={{fontFamily:'inherit'}}>Copyright © 2021 All Rights Reserved.</div>
             <JoinCommunityBox >
-                <div style={{fontFamily:'inherit', fontWeight:400}}>Join our community</div>
+                <div style={{fontFamily:'PoppinsRegular', fontWeight:400}}>Join our community</div>
                 <img src='/images/icons/telegram.png' alt='join_telegram'/>
                 <img src='/images/icons/twitter.png' alt='join_twitter'/>
             </JoinCommunityBox>
