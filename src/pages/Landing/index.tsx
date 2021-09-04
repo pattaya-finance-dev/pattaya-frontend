@@ -66,9 +66,8 @@ const MenuList = styled.div`
 const MenuListItem = styled.a`
     color:#ffffff;
     text-transform: uppercase;
-    font-family: inherit;
+    font-family: PoppinsBold;
     font-size: 18px;
-    font-weight: 600;
 `
 
 const HomeContainer = styled.div`
@@ -89,7 +88,6 @@ const HomeContent = styled.div`
     
     font-family: PoppinsBold;
     font-size: 32px;
-    font-weight: 600;
 `
 
 const HomeAction = styled.div`
@@ -128,7 +126,6 @@ const TokenomicsContainer = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 32px;
-    font-weight: 600;
     
     margin-top:100px;
     width:1200px;
@@ -155,7 +152,6 @@ const TokenomicsCard = styled.div`
     
     font-family: PoppinsBold;
     font-size: 30px;
-    font-weight: 600;
     
     width:420px;
     height: 580px;
@@ -164,7 +160,6 @@ const TokenomicsCard = styled.div`
 const TokenomicsCardDesc = styled.div`
     font-family:PoppinsMedium;
     font-size: 18px;
-    font-weight: 500;
     margin-top: 36px;
     text-align: center;
     line-height: 28px;
@@ -179,7 +174,6 @@ const HowToBuyContainer = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 32px;
-    font-weight: 600;
     
     margin-top:100px;
     width:1200px;
@@ -194,7 +188,6 @@ const RoadmapBuyContainer = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 32px;
-    font-weight: 600;
     
     margin-top:100px;
     width:1200px;
@@ -209,7 +202,6 @@ const PartnersContainer = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 32px;
-    font-weight: 600;
     
     margin-top:100px;
     width:1200px;
@@ -229,7 +221,6 @@ const PartnersRow = styled.div`
 const RoadmapText = styled.div`
     font-family: PoppinsMedium;
     font-size: 20px;
-    font-weight: 500;
     margin-top: 50px;
     text-align: center;
     line-height: 40px;
@@ -261,7 +252,6 @@ const RoadmapItem = styled.div`
     
     font-family: inherit;
     font-size: 30px;
-    font-weight: 600;
     text-align: center;
 `
 
@@ -270,7 +260,6 @@ const RoadmapItemSmall = styled.div`
     
     font-family: inherit;
     font-size: 20px;
-    font-weight: 500;
     text-align: center;
     line-height: 32px;
 `
@@ -310,7 +299,6 @@ const HowToStepText = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 90px;
-    font-weight: 600;
     flex:1;
     text-align:center;
 `
@@ -326,7 +314,6 @@ const HowToTitleText = styled.div`
     color: #ffffff;
     font-family: PoppinsBold;
     font-size: 20px;
-    font-weight: 600;
     flex:1;
     margin-left: 32px;
 `
@@ -335,7 +322,6 @@ const HowToDescText = styled.div`
     color: #ffffff;
     font-family: PoppinsMedium;
     font-size: 20px;
-    font-weight: 500;
     flex:3;
     line-height:30px;
 `
@@ -363,7 +349,6 @@ const Footer = styled.div`
     
     font-family: PoppinsBold;
     font-size: 20px;
-    font-weight: 600;
 `
 
 const JoinCommunityBox = styled.div`
@@ -422,9 +407,9 @@ const Landing = () => {
             </HomeContainer>
             <HomeContainer id='about_tag'>
                 <BigCoinImage src='/images/pattaya_big_coin.png' />
-                <HomeContent style={{fontSize:'18px', fontWeight:500, lineHeight:'26px'}}>
+                <HomeContent style={{fontSize:'18px', lineHeight:'26px'}}>
                     <div style={{fontFamily:'inherit'}}>
-                        <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>About Pattaya&lsquo;s Token</div>
+                        <div style={{fontFamily:'PoppinsBold', fontSize:'28px'}}>About Pattaya&lsquo;s Token</div>
                         <SeparateLine/>
                     </div>
                     <div style={{fontFamily:'PoppinsMedium', marginTop:'28px'}}>
@@ -436,11 +421,11 @@ const Landing = () => {
             </HomeContainer>
             <TokenomicsContainer id='tokenomics_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
-                    <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Tokenomics</div>
+                    <div style={{fontFamily:'PoppinsBold', fontSize:'28px'}}>Tokenomics</div>
                     <SeparateLine style={{width:'150px'}}/>
                 </div>
 
-                <div style={{marginTop: '42px', fontWeight:500, fontFamily:'inherit', fontSize:'20px', lineHeight:'42px', width:'100%'}}>
+                <div style={{marginTop: '42px',fontFamily:'PoppinsMedium', fontSize:'20px', lineHeight:'42px', width:'100%'}}>
                     <p style={{fontFamily:'PoppinsMedium', textAlign:'center'}}>Max Cap 100,000,000 Tokens
                     </p>
                     <p style={{fontFamily:'PoppinsMedium', textAlign:'center'}}>100,000 tokens trading limit per transaction. (0.1% of max supply)</p>
@@ -483,7 +468,7 @@ const Landing = () => {
             </TokenomicsContainer>
             <HowToBuyContainer id='how_to_buy_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
-                    <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>How to Buy?</div>
+                    <div style={{fontFamily:'PoppinsBold', fontSize:'28px'}}>How to Buy?</div>
                     <SeparateLine style={{width:'150px'}}/>
                 </div>
                 <HowToBuyCard>
@@ -534,7 +519,7 @@ const Landing = () => {
             </HowToBuyContainer>
             <RoadmapBuyContainer id='roadmap_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
-                    <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Roadmap</div>
+                    <div style={{fontFamily:'PoppinsBold', fontSize:'28px'}}>Roadmap</div>
                     <SeparateLine style={{width:'150px'}}/>
                 </div>
                 <RoadmapText>
@@ -583,7 +568,7 @@ const Landing = () => {
             </RoadmapBuyContainer>
             <PartnersContainer id='partners_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
-                    <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Partners</div>
+                    <div style={{fontFamily:'PoppinsBold', fontSize:'28px'}}>Partners</div>
                     <SeparateLine style={{width:'150px'}}/>
                 </div>
                 <PartnersRow>
@@ -603,7 +588,7 @@ const Landing = () => {
         <Footer>
             <div style={{fontFamily:'inherit'}}>Copyright © 2021 All Rights Reserved.</div>
             <JoinCommunityBox >
-                <div style={{fontFamily:'PoppinsRegular', fontWeight:400}}>Join our community</div>
+                <div style={{fontFamily:'PoppinsRegular'}}>Join our community</div>
                 <img src='/images/icons/telegram.png' alt='join_telegram'/>
                 <img src='/images/icons/twitter.png' alt='join_twitter'/>
             </JoinCommunityBox>
