@@ -22,6 +22,7 @@ import Farms from "./Farms";
 import Pools from "./Pools";
 import Referrals from "./Referrals";
 import Home from "./Home";
+import Landing from "./Landing";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -98,11 +99,13 @@ export default function App() {
             value={{ selectedLanguage, setSelectedLanguage, translatedLanguage, setTranslatedLanguage }}
           >
             <TranslationsContext.Provider value={{ translations, setTranslations }}>
-              <Menu>
+              <Switch>
+                <Route exact strict path="/" component={Landing} />
+                <Menu>
                   <Popups />
                   <Web3ReactManager>
                     <Switch>
-                      <Route exact strict path="/" component={Home} />
+                      <Route exact strict path="/home" component={Home} />
                       <Route exact strict path="/swap" component={Swap} />
                       <Route exact strict path="/find" component={PoolFinder} />
                       <Route exact strict path="/pool" component={Pool} />
@@ -123,6 +126,7 @@ export default function App() {
                   </Web3ReactManager>
                   <Marginer />
               </Menu>
+              </Switch>
             </TranslationsContext.Provider>
           </LanguageContext.Provider>
         </AppWrapper>
