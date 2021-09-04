@@ -1,5 +1,6 @@
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useHistory } from "react-router-dom";
 
 import { Button, ButtonVariants } from "@pattayaswap-dev-libs/uikit";
 
@@ -60,7 +61,7 @@ const MenuList = styled.div`
     font-family: 'Poppins';
 `
 
-const MenuListItem = styled.span`
+const MenuListItem = styled.a`
     color:#ffffff;
     text-transform: uppercase;
     font-family: inherit;
@@ -373,6 +374,18 @@ const JoinCommunityBox = styled.div`
 `
 
 const Landing = () => {
+
+    const history = useHistory();
+
+    const onClickLaunch = () => {
+        history.push('/home')
+    }
+
+    const onClickBuy = () => {
+        const pancakeUrl = 'https://pancakeswap.finance/swap'
+        window.open(pancakeUrl, '_blank');
+    }
+
     return (
         <Wrapper>
         <BodyWrapper>
@@ -382,16 +395,16 @@ const Landing = () => {
                     href="/"
                 />
                 <MenuList>
-                    <MenuListItem>Home</MenuListItem>
-                    <MenuListItem>About</MenuListItem>
-                    <MenuListItem>Tokenomics</MenuListItem>
-                    <MenuListItem>How To Buy?</MenuListItem>
-                    <MenuListItem>Roadmap</MenuListItem>
-                    <MenuListItem>Partners</MenuListItem>
+                    <MenuListItem href='#home_tag'>Home</MenuListItem>
+                    <MenuListItem href='#about_tag'>About</MenuListItem>
+                    <MenuListItem href='#tokenomics_tag'>Tokenomics</MenuListItem>
+                    <MenuListItem href='#how_to_buy_tag'>How To Buy?</MenuListItem>
+                    <MenuListItem href='#roadmap_tag'>Roadmap</MenuListItem>
+                    <MenuListItem href='#partners_tag'>Partners</MenuListItem>
                 </MenuList>
-                <Button style={{fontSize:'18px'}}>Launch app</Button>
+                <Button onClick={onClickLaunch} style={{fontSize:'18px'}}>Launch app</Button>
             </LandingMenu>
-            <HomeContainer>
+            <HomeContainer id='home_tag'>
                 <HomeContent>
                     <div style={{fontFamily:'inherit', lineHeight:'56px'}}>
                         <p style={{fontFamily:'inherit'}}>Pattaya’s Token and</p>
@@ -399,13 +412,13 @@ const Landing = () => {
                         <p style={{fontFamily:'inherit'}}>Decentralise Exchange</p>
                     </div>
                     <HomeAction>
-                        <Button style={{fontSize:'18px'}}>Launch app</Button>
-                        <Button variant='tertiary' style={{fontSize:'18px'}}>Buy Pattaya</Button>
+                        <Button onClick={onClickLaunch} style={{fontSize:'18px'}}>Launch app</Button>
+                        <Button onClick={onClickBuy} variant='tertiary' style={{fontSize:'18px'}}>Buy Pattaya</Button>
                     </HomeAction>
                 </HomeContent>
                 <BigLogoImage src='/images/pattaya_big_logo.png' />
             </HomeContainer>
-            <HomeContainer>
+            <HomeContainer id='about_tag'>
                 <BigCoinImage src='/images/pattaya_big_coin.png' />
                 <HomeContent style={{fontSize:'18px', fontWeight:500, lineHeight:'26px'}}>
                     <div style={{fontFamily:'inherit'}}>
@@ -419,7 +432,7 @@ const Landing = () => {
                     </div>
                 </HomeContent>
             </HomeContainer>
-            <TokenomicsContainer>
+            <TokenomicsContainer id='tokenomics_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
                     <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Tokenomics</div>
                     <SeparateLine style={{width:'150px'}}/>
@@ -466,7 +479,7 @@ const Landing = () => {
                     </TokenomicsCard>
                 </TokenomicsCardContainer>
             </TokenomicsContainer>
-            <HowToBuyContainer>
+            <HowToBuyContainer id='how_to_buy_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
                     <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>How to Buy?</div>
                     <SeparateLine style={{width:'150px'}}/>
@@ -517,7 +530,7 @@ const Landing = () => {
                     </HowToBuyCol>
                 </HowToBuyCard>
             </HowToBuyContainer>
-            <RoadmapBuyContainer>
+            <RoadmapBuyContainer id='roadmap_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
                     <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Roadmap</div>
                     <SeparateLine style={{width:'150px'}}/>
@@ -566,7 +579,7 @@ const Landing = () => {
                     </RoadmapRow>
                 </RoadmapTimeline>
             </RoadmapBuyContainer>
-            <PartnersContainer>
+            <PartnersContainer id='partners_tag'>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',fontFamily:'inherit'}}>
                     <div style={{fontFamily:'inherit', fontSize:'28px', fontWeight:600}}>Partners</div>
                     <SeparateLine style={{width:'150px'}}/>
